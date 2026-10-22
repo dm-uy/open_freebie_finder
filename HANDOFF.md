@@ -1,24 +1,30 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Awaiting review and approval of specification `specs/T-004-openai-proxy-and-failover.md` (v1.0.0) to proceed with implementation of task T-004.
+Nothing is blocking. Batch B-001 / Phase P1 is completely verified and marked `done`. Ready for owner review and scoping of Phase P2 (Provider Validation API, Circuit Breaker enhancements, and Multi-provider live activation).
 
 ## State
-* **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), and `T-003` (Declarative Provider Registry and Discovery Engine). Prepared specification `specs/T-004-openai-proxy-and-failover.md` (v1.0.0, Approval: pending) for task `T-004`.
+* **Active Phase:** Completed P1 (Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration). Moving to P2.
+* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), `T-003` (Declarative Provider Registry and Discovery Engine), and `T-004` (OpenAI Proxy Endpoints, Two-Tier Failover Router, and Streaming SSE Pre-buffering).
 * **Completed Work:**
-  * Resolved all review findings from T-003 (purging empty models, explicit exceptions, float context, clean HANDOFF, 12 passing tests).
-  * Authored complete specification for T-004 [specs/T-004-openai-proxy-and-failover.md](specs/T-004-openai-proxy-and-failover.md) adhering to all Section 4 requirements (MIXED profile, Input RECON at commit `db46b03`, BR-1..6, Boundaries, Expected Architecture, Scope MAY EDIT/DO NOT TOUCH, AC-1..10, Traceability Matrix, Delivery Probes, Scenarios for DeepSeek Harness, failover, and streaming pre-buffer).
+  * Fully implemented OpenAI proxy endpoints `/v1/chat/completions` (buffered and SSE streaming) and `/v1/models`.
+  * Implemented Two-Tier Cascade Failover: Tier 1 tries same canonical model across active providers; Tier 2 falls back to alternative active free models up to 3 attempts.
+  * Implemented First-Token streaming pre-buffering to catch upstream 429/5xx errors before headers/bytes are committed to the client.
+  * Guaranteed canonical model name masking in all responses and SSE chunks.
+  * Supported permissive client authorization with optional `PROXY_MASTER_KEY` enforcement.
+  * Synthesized zeroed `usage` blocks when omitted by upstream providers.
+  * Standardized all error responses to OpenAI JSON error envelopes (`{"error": {...}}`).
+  * Executed all Delivery Probes with 100% success (24 passing pytest tests in 0.12s).
 * **Actual Environment State:**
-  * Git: `main` branch, HEAD `db46b03` (prior to T-004 spec commit).
+  * Git: `main` branch.
   * Local Git user: `dm-uy`.
   * Open-source license: MIT.
-  * Tests: 12 passed in 0.06s.
+  * Tests: 24 passed in 0.12s.
 
 ## Queue
-* **Active Batch:** B-001
-* **Next Permitted Step:** `T-004` — Implementation of OpenAI proxy endpoints (`/v1/chat/completions` and `/v1/models`), CascadeRouter with Two-Tier Failover, and streaming pre-buffering.
-* **Deferred Scope:** P2 (Groq/Nvidia live activation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
+* **Active Batch:** B-001 completed!
+* **Next Permitted Step:** Scope next work package for Phase P2 (Provider Validation API `POST /api/admin/providers/validate` and dynamic live activation).
+* **Deferred Scope:** P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Traps
 * **Dynamic Model Availability:** OpenRouter frequently introduces and deprecates free models (suffix `:free`). Hardcoding model identifiers will lead to silent breakages; the dynamic discovery engine is mandatory.

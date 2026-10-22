@@ -29,6 +29,9 @@ class Settings(BaseSettings):
     discovery_interval_seconds: int = 900  # 15 minutes
     circuit_breaker_cooldown_seconds: int = 60
 
+    # Master API Key (Optional: if set, proxy validates Authorization: Bearer <key>)
+    proxy_master_key: Optional[str] = None
+
     # Provider API Keys (optional in environment, can also be supplied via UI/API)
     openrouter_api_key: Optional[str] = None
     groq_api_key: Optional[str] = None

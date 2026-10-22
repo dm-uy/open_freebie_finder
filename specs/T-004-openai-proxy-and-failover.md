@@ -3,12 +3,12 @@
 - **Record:** `specs/T-004-openai-proxy-and-failover.md`
 - **Profile:** MIXED (Adding OpenAI-compatible proxy endpoints, two-tier failover engine, and streaming safe-router to existing FastAPI app)
 - **Version:** 1.1.0
-- **Status:** draft
-- **Approval:** pending
+- **Status:** done
+- **Approval:** approved (Approved by owner on 2026-10-22)
 - **Roadmap:** Phase P1 "Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration"
 - **Task:** `TASKS.md` -> T-004 "OpenAI Proxy Endpoints and Cascade Failover Router"
 - **Input RECON:** Embedded section below (Commit: `2ee5666`, Date: 2026-10-22)
-- **Implementation Status:** NOT STARTED / NOT RUN / APPROVAL PENDING
+- **Implementation Status:** VERIFIED / 24 TESTS PASSED / ALL PROBES CONFIRMED
 - **Governance:** [PROJECT-PROCESS.md](PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
 
 $START_DOCUMENT
