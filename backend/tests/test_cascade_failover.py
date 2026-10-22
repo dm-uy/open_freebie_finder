@@ -281,3 +281,108 @@ async def test_tier2_fallback_when_tier1_exhausted(test_registry):
     assert response["choices"][0]["message"]["content"] == "Served by Tier 2 backup!"
     # Even though served by Tier 2 backup, client sees their requested model name (canonical masking)
     assert response["model"] == "requested/target-model"
+
+
+@pytest.mark.asyncio
+async def test_streaming_role_first_failover(test_registry):
+    """Verify that an in-stream 429 occurring after a role-only chunk triggers failover to Candidate 2."""
+    test_models = [
+        DiscoveredModel(
+            id="role-first-failing",
+            canonical_name="role-stream-model",
+            provider_id="local_ollama",
+            context_window=8192,
+            is_free=True,
+        ),
+        DiscoveredModel(
+            id="role-second-working",
+            canonical_name="role-stream-model",
+            provider_id="local_ollama",
+            context_window=8192,
+            is_free=True,
+        ),
+    ]
+    await test_registry.register_models(test_models)
+
+    call_counts = {"c1": 0, "c2": 0}
+
+    def mock_stream_handler(request: httpx.Request) -> httpx.Response:
+        body = request.read().decode("utf-8")
+        if "role-first-failing" in body:
+            call_counts["c1"] += 1
+            # Emits role chunk first, then immediately emits an in-stream 429 error!
+            sse_failing = (
+                b'data: {"id":"c1","choices":[{"delta":{"role":"assistant"}}],"model":"role-first-failing"}\n\n'
+                b'data: {"error":{"message":"Rate limit exceeded","code":429}}\n\n'
+            )
+            return httpx.Response(200, content=sse_failing, headers={"Content-Type": "text/event-stream"})
+        elif "role-second-working" in body:
+            call_counts["c2"] += 1
+            sse_working = (
+                b'data: {"id":"c2","choices":[{"delta":{"role":"assistant"}}],"model":"role-second-working"}\n\n'
+                b'data: {"id":"c2","choices":[{"delta":{"content":"Recovered stream!"}}],"model":"role-second-working"}\n\n'
+                b'data: [DONE]\n\n'
+            )
+            return httpx.Response(200, content=sse_working, headers={"Content-Type": "text/event-stream"})
+        return httpx.Response(404)
+
+    mock_client = httpx.AsyncClient(transport=httpx.MockTransport(mock_stream_handler))
+    router = CascadeRouter(
+        registry=test_registry,
+        provider_client=OpenAIProviderClient(http_client=mock_client),
+    )
+
+    stream_gen = await router.route_stream_completion(
+        requested_model="role-stream-model",
+        payload={"messages": [{"role": "user", "content": "Hi"}]},
+    )
+
+    chunks = []
+    async for chunk in stream_gen:
+        chunks.append(chunk)
+
+    full_text = "".join(chunks)
+    # Stream cleanly failed over to candidate 2 without client receiving error!
+    assert "Recovered stream!" in full_text
+    assert call_counts["c1"] == 1
+    assert call_counts["c2"] == 1
+    assert router.is_on_cooldown("local_ollama", "role-first-failing") is True
+
+
+@pytest.mark.asyncio
+async def test_max_failover_attempts_limit(test_registry):
+    """Verify that router tries at most MAX_FAILOVER_ATTEMPTS (3) candidates before returning 503."""
+    test_models = [
+        DiscoveredModel(
+            id=f"failing-cand-{i}",
+            canonical_name="multi-fail-model",
+            provider_id="local_ollama",
+            context_window=4096,
+            is_free=True,
+        )
+        for i in range(5)  # 5 failing candidates
+    ]
+    await test_registry.register_models(test_models)
+
+    call_counts = {"attempts": 0}
+
+    def mock_all_fail(request: httpx.Request) -> httpx.Response:
+        call_counts["attempts"] += 1
+        return httpx.Response(500, text="Downstream error")
+
+    mock_client = httpx.AsyncClient(transport=httpx.MockTransport(mock_all_fail))
+    router = CascadeRouter(
+        registry=test_registry,
+        provider_client=OpenAIProviderClient(http_client=mock_client),
+    )
+
+    from backend.app.core.adapters.openai_client import UpstreamProviderError
+    with pytest.raises(UpstreamProviderError) as exc_info:
+        await router.route_completion(
+            requested_model="multi-fail-model",
+            payload={"messages": [{"role": "user", "content": "Hi"}]},
+        )
+
+    # Exactly 3 attempts were made before stopping
+    assert call_counts["attempts"] == 3
+    assert exc_info.value.status_code == 503

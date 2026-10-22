@@ -209,7 +209,10 @@ class OpenAIProviderClient:
                         choices = chunk_json.get("choices", [])
                         if choices and isinstance(choices, list):
                             delta = choices[0].get("delta", {})
-                            if delta.get("content") is not None or delta.get("role"):
+                            # Strictly require non-empty text content to consider the first token received.
+                            # Role-only chunks (e.g. {"role": "assistant"}) remain pre-buffered so that
+                            # an in-stream 429 immediately following the role chunk can still trigger failover.
+                            if delta.get("content"):
                                 first_token_received = True
                                 break
                     except json.JSONDecodeError:
@@ -222,25 +225,29 @@ class OpenAIProviderClient:
                 yield f"{buffered}\n\n"
 
             # Continue streaming remaining chunks from upstream
-            async for line in lines_iterator:
-                line_str = line.strip()
-                if not line_str:
-                    continue
+            try:
+                async for line in lines_iterator:
+                    line_str = line.strip()
+                    if not line_str:
+                        continue
 
-                if line_str.startswith("data: "):
-                    content = line_str[6:].strip()
-                    if content == "[DONE]":
-                        yield "data: [DONE]\n\n"
-                        break
+                    if line_str.startswith("data: "):
+                        content = line_str[6:].strip()
+                        if content == "[DONE]":
+                            yield "data: [DONE]\n\n"
+                            break
 
-                    try:
-                        chunk_json = json.loads(content)
-                        chunk_json["model"] = canonical_model
-                        yield f"data: {json.dumps(chunk_json)}\n\n"
-                    except json.JSONDecodeError:
+                        try:
+                            chunk_json = json.loads(content)
+                            chunk_json["model"] = canonical_model
+                            yield f"data: {json.dumps(chunk_json)}\n\n"
+                        except json.JSONDecodeError:
+                            yield f"{line_str}\n\n"
+                    else:
                         yield f"{line_str}\n\n"
-                else:
-                    yield f"{line_str}\n\n"
+            except (httpx.RemoteProtocolError, httpx.RequestError) as stream_exc:
+                logger.warning("Stream connection disconnected from %s: %s", manifest.id, str(stream_exc))
+                return
 
             await resp.aclose()
         finally:

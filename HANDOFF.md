@@ -1,30 +1,30 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Nothing is blocking. Batch B-001 / Phase P1 is completely verified and marked `done`. Ready for owner review and scoping of Phase P2 (Provider Validation API, Circuit Breaker enhancements, and Multi-provider live activation).
+Decision on Phase P1 closure criterion:
+- Option A: Owner provides `OPENROUTER_API_KEY` in `.env` to execute live completion probe against a live free model.
+- Option B: Owner formally approves closing P1 based on ASGI-level test verification (26 automated unit and integration tests passing).
 
 ## State
-* **Active Phase:** Completed P1 (Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration). Moving to P2.
-* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), `T-003` (Declarative Provider Registry and Discovery Engine), and `T-004` (OpenAI Proxy Endpoints, Two-Tier Failover Router, and Streaming SSE Pre-buffering).
+* **Active Phase:** P1 (Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration) — active, code complete.
+* **Active Task:** `T-004` (OpenAI Proxy Endpoints and Cascade Failover Router) is in `review`.
 * **Completed Work:**
-  * Fully implemented OpenAI proxy endpoints `/v1/chat/completions` (buffered and SSE streaming) and `/v1/models`.
-  * Implemented Two-Tier Cascade Failover: Tier 1 tries same canonical model across active providers; Tier 2 falls back to alternative active free models up to 3 attempts.
-  * Implemented First-Token streaming pre-buffering to catch upstream 429/5xx errors before headers/bytes are committed to the client.
-  * Guaranteed canonical model name masking in all responses and SSE chunks.
-  * Supported permissive client authorization with optional `PROXY_MASTER_KEY` enforcement.
-  * Synthesized zeroed `usage` blocks when omitted by upstream providers.
-  * Standardized all error responses to OpenAI JSON error envelopes (`{"error": {...}}`).
-  * Executed all Delivery Probes with 100% success (24 passing pytest tests in 0.12s).
+  * Fixed pre-buffering defect: stream strictly pre-buffers until non-empty `delta.content` is received (protecting against post-role in-stream 429 errors).
+  * Switched cooldown tracking to `time.monotonic()`.
+  * Added constant-time `hmac.compare_digest` for master key auth.
+  * Added `ChatMessage.content: Any` to accept multimodal message payloads.
+  * Moved correlation ID request logging to Phase P2 roadmap deliverable.
+  * Added unit tests for role-first in-stream failover and max 3 attempts limit (26 passing tests in `backend/tests`).
 * **Actual Environment State:**
   * Git: `main` branch.
   * Local Git user: `dm-uy`.
   * Open-source license: MIT.
-  * Tests: 24 passed in 0.12s.
+  * Tests: 26 passed in 0.13s.
 
 ## Queue
-* **Active Batch:** B-001 completed!
-* **Next Permitted Step:** Scope next work package for Phase P2 (Provider Validation API `POST /api/admin/providers/validate` and dynamic live activation).
-* **Deferred Scope:** P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
+* **Active Batch:** B-001 (T-001, T-002, T-003 done, T-004 in review).
+* **Next Permitted Step:** Owner decision on Option A vs B for P1 completion, then scope Phase P2 work package.
+* **Deferred Scope:** P2 (Groq/Nvidia live activation, correlation-ID telemetry, and circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Traps
 * **Dynamic Model Availability:** OpenRouter frequently introduces and deprecates free models (suffix `:free`). Hardcoding model identifiers will lead to silent breakages; the dynamic discovery engine is mandatory.

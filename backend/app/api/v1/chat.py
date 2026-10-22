@@ -1,4 +1,5 @@
 """OpenAI-compatible /v1/chat/completions endpoint."""
+import hmac
 import json
 import logging
 from typing import Any, Optional
@@ -18,7 +19,7 @@ class ChatMessage(BaseModel):
     """Chat message object conforming to OpenAI schema."""
 
     role: str
-    content: str
+    content: Any
     name: Optional[str] = None
 
 
@@ -51,13 +52,13 @@ def get_cascade_router() -> CascadeRouter:
 
 
 def _verify_auth(authorization: Optional[str]) -> Optional[JSONResponse]:
-    """Verify authorization against optional proxy_master_key."""
+    """Verify authorization against optional proxy_master_key using constant-time comparison."""
     settings = get_settings()
     if not settings.proxy_master_key:
         return None  # Permissive auth: accept any key or missing header
 
     expected = f"Bearer {settings.proxy_master_key}"
-    if not authorization or authorization.strip() != expected:
+    if not authorization or not hmac.compare_digest(authorization.strip(), expected):
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={

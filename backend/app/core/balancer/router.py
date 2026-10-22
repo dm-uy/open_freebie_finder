@@ -32,11 +32,11 @@ class CascadeRouter:
         self._cooldowns: dict[tuple[str, str], float] = {}
 
     def is_on_cooldown(self, provider_id: str, model_id: str) -> bool:
-        """Check whether a specific provider/model is currently in cool-off period."""
+        """Check whether a specific provider/model is currently in cool-off period using monotonic clock."""
         exp = self._cooldowns.get((provider_id, model_id))
         if exp is None:
             return False
-        if time.time() >= exp:
+        if time.monotonic() >= exp:
             del self._cooldowns[(provider_id, model_id)]
             return False
         return True
@@ -44,7 +44,7 @@ class CascadeRouter:
     def set_cooldown(self, provider_id: str, model_id: str, duration: Optional[float] = None) -> None:
         """Place a candidate model on cooldown after a 429/5xx error."""
         dur = duration if duration is not None else self.cooldown_seconds
-        self._cooldowns[(provider_id, model_id)] = time.time() + dur
+        self._cooldowns[(provider_id, model_id)] = time.monotonic() + dur
         logger.info("Candidate (%s, %s) placed on cooldown for %ds", provider_id, model_id, int(dur))
 
     def resolve_candidates(self, requested_model: str) -> list[DiscoveredModel]:
@@ -115,13 +115,13 @@ class CascadeRouter:
         last_error: Optional[Exception] = None
 
         for candidate in candidates:
-            if attempts >= MAX_FAILOVER_ATTEMPTS:
-                break
-            attempts += 1
-
             manifest = self.registry.get_manifest(candidate.provider_id)
             if not manifest:
                 continue
+
+            if attempts >= MAX_FAILOVER_ATTEMPTS:
+                break
+            attempts += 1
 
             try:
                 response = await self.client.complete(
@@ -169,13 +169,13 @@ class CascadeRouter:
         last_error: Optional[Exception] = None
 
         for candidate in candidates:
-            if attempts >= MAX_FAILOVER_ATTEMPTS:
-                break
-            attempts += 1
-
             manifest = self.registry.get_manifest(candidate.provider_id)
             if not manifest:
                 continue
+
+            if attempts >= MAX_FAILOVER_ATTEMPTS:
+                break
+            attempts += 1
 
             try:
                 # Open candidate stream generator
