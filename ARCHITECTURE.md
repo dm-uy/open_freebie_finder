@@ -165,8 +165,11 @@ Client Request -> [/v1/chat/completions] (model="auto:free")
 
 ## 5. Invariants and Trust Boundaries
 1. **Client Isolation from Upstream Failures:** Upstream `429 Too Many Requests` and `5xx` errors are never propagated directly to the downstream client as long as at least one eligible model remains available in the candidate pool.
-2. **Failover-Safe Streaming:** For streaming completions (`stream: true`), the proxy delays emitting the initial SSE handshake until receiving a valid `200 OK` from the upstream provider. If an upstream `429` or connection failure occurs at initiation, failover executes seamlessly before any bytes are transmitted to the downstream client.
-3. **Local Credential Boundary:** Provider API keys are maintained strictly in local storage (`.env` or local SQLite); keys are never logged, telemetry-reported, or exposed to third parties.
+2. **Centralized Upstream Credential Encapsulation:** Downstream harnesses (e.g. DeepSeek Harness, Cursor) connect using a single endpoint without needing upstream keys. All provider credentials reside securely inside Open Freebie Finder.
+3. **Failover-Safe Streaming:** For streaming completions (`stream: true`), the proxy delays emitting the initial SSE handshake until receiving a valid first chunk from the upstream provider. If an upstream `429` or connection failure occurs at initiation, failover executes seamlessly before any bytes are transmitted to the downstream client.
+4. **Canonical Model Name Masking:** Model names returned in completion payloads and SSE chunks always match the canonical identifier requested by the client, shielding downstream consumers from internal provider naming discrepancies.
+5. **Non-blocking Model Catalog:** `GET /v1/models` resolves exclusively from the local in-memory registry in < 2ms, guaranteeing instantaneous response to harness "Fetch available models" queries.
+6. **Local Credential Boundary:** Provider API keys are maintained strictly in local storage (`.env` or local SQLite); keys are never logged, telemetry-reported, or exposed to third parties.
 
 ## 6. Execution and Environments
 * **Local Development Environment:**
@@ -178,3 +181,4 @@ Client Request -> [/v1/chat/completions] (model="auto:free")
 ## 7. Architectural Decisions and Rationales
 * See [DEC-001: Technology Stack and Architecture Pattern](docs/decisions/DEC-001-stack-and-architecture.md) for rationale concerning FastAPI, React, SQLite, and OpenAI reverse-proxy pattern selection.
 * See [DEC-002: Declarative Provider Schema and Automated Onboarding](docs/decisions/DEC-002-declarative-provider-schema.md) for declarative configuration, universal adapter, out-of-the-box provider bundle, and provider onboarding evolution.
+* See [DEC-003: Canonical Model Mapping and Harness Interoperability](docs/decisions/DEC-003-canonical-model-mapping-and-harness-interop.md) for two-tier failover, credential encapsulation, and harness interop.

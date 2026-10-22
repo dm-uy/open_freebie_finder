@@ -1,17 +1,18 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Nothing is currently blocking. T-002 (FastAPI backend scaffold) complete and verified with pytest. Ready to proceed to task `T-003` (Declarative Provider Registry, 10 out-of-the-box manifests, and Dynamic Discovery Engine).
+Nothing is currently blocking. DEC-003 (Canonical Model Mapping, Credential Encapsulation, and Harness Interoperability) documented and committed. Ready to execute `T-003` (Declarative Provider Registry, 10-provider manifests bundle, and Dynamic Discovery Engine).
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Documentation & Architecture) and `T-002` (FastAPI backend scaffold, config, `/health`, and test suite). Next up: `T-003` (Declarative provider schema, 10 manifests bundle, and OpenRouter discovery).
+* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Next up: `T-003` (Declarative provider schema, 10 manifests bundle, and OpenRouter discovery).
 * **Completed Work:**
   * Created Python 3.15 virtualenv `.venv` and installed dependencies (`backend/requirements.txt`).
   * Built application configuration module (`backend/app/config.py`) supporting `.env` and environment variables.
   * Implemented application factory with CORS middleware and `/health` endpoint (`backend/app/main.py`).
   * Configured `pytest.ini` and verified with passing test suite (`backend/tests/test_health.py`).
   * Created `.env.example` documenting all provider keys and settings.
+  * Recorded DEC-003 specifying DeepSeek Harness interop, non-blocking `/v1/models`, upstream credential encapsulation, canonical model masking, two-tier failover, and superposition brainstorming protocol.
 * **Actual Environment State:**
   * Git: Initialized on `main` branch.
   * Local Git user: `dm-uy`.
