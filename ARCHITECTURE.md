@@ -182,3 +182,4 @@ Client Request -> [/v1/chat/completions] (model="auto:free")
 * See [DEC-001: Technology Stack and Architecture Pattern](docs/decisions/DEC-001-stack-and-architecture.md) for rationale concerning FastAPI, React, SQLite, and OpenAI reverse-proxy pattern selection.
 * See [DEC-002: Declarative Provider Schema and Automated Onboarding](docs/decisions/DEC-002-declarative-provider-schema.md) for declarative configuration, universal adapter, out-of-the-box provider bundle, and provider onboarding evolution.
 * See [DEC-003: Canonical Model Mapping and Harness Interoperability](docs/decisions/DEC-003-canonical-model-mapping-and-harness-interop.md) for two-tier failover, credential encapsulation, and harness interop.
+* See [DEC-004: Benchmark Scoring Registry](docs/decisions/DEC-004-benchmark-scoring-registry.md) for the static curated benchmark store, script-assisted updates, and the `unranked` fallback governing P3.
