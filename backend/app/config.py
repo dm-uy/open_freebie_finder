@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     # Discovery Configuration
     discovery_interval_seconds: int = 900  # 15 minutes
     circuit_breaker_cooldown_seconds: int = 60
+    max_telemetry_records: int = 500
 
     # Master API Key (Optional: if set, proxy validates Authorization: Bearer <key>)
     proxy_master_key: Optional[str] = None

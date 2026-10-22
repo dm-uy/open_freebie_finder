@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from backend.app.api.admin import admin_router
 from backend.app.api.v1 import v1_router
 from backend.app.config import get_settings
 from backend.app.core.discovery.openrouter import OpenRouterDiscoveryService
@@ -78,6 +79,9 @@ def create_app() -> FastAPI:
 
     # Mount OpenAI-compatible v1 endpoints
     application.include_router(v1_router, prefix="/v1")
+
+    # Mount Admin API endpoints
+    application.include_router(admin_router, prefix="/api/admin")
 
     @application.get("/health", tags=["System"])
     async def health_check() -> dict[str, str]:

@@ -1,7 +1,8 @@
-"""OpenAI-compatible /v1/chat/completions endpoint."""
+"""OpenAI-compatible /v1/chat/completions endpoint with correlation tracing."""
 import hmac
 import json
 import logging
+import uuid
 from typing import Any, Optional
 from fastapi import APIRouter, Header, Request, status
 from fastapi.responses import JSONResponse, StreamingResponse
@@ -51,7 +52,16 @@ def get_cascade_router() -> CascadeRouter:
     return _cascade_router
 
 
-def _verify_auth(authorization: Optional[str]) -> Optional[JSONResponse]:
+def _json_response(status_code: int, content: dict[str, Any], request_id: str) -> JSONResponse:
+    """Emit JSONResponse with mandatory X-Request-ID header reflection (BR-2, AC-2, AC-3, AC-4)."""
+    return JSONResponse(
+        status_code=status_code,
+        content=content,
+        headers={"X-Request-ID": request_id},
+    )
+
+
+def _verify_auth(authorization: Optional[str], request_id: str) -> Optional[JSONResponse]:
     """Verify authorization against optional proxy_master_key using constant-time comparison."""
     settings = get_settings()
     if not settings.proxy_master_key:
@@ -59,7 +69,7 @@ def _verify_auth(authorization: Optional[str]) -> Optional[JSONResponse]:
 
     expected = f"Bearer {settings.proxy_master_key}"
     if not authorization or not hmac.compare_digest(authorization.strip(), expected):
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_401_UNAUTHORIZED,
             content={
                 "error": {
@@ -68,6 +78,7 @@ def _verify_auth(authorization: Optional[str]) -> Optional[JSONResponse]:
                     "code": 401,
                 }
             },
+            request_id=request_id,
         )
     return None
 
@@ -77,9 +88,13 @@ async def create_chat_completion(
     request: Request,
     authorization: Optional[str] = Header(None),
 ) -> Any:
-    """Execute chat completion with transparent cascade failover and canonical masking."""
+    """Execute chat completion with transparent cascade failover, canonical masking, and correlation tracing."""
+    # Ingest incoming correlation ID or generate fresh UUID4 (BR-2, AC-2, AC-3)
+    raw_corr_id = request.headers.get("X-Request-ID")
+    request_id = raw_corr_id.strip() if raw_corr_id and raw_corr_id.strip() else str(uuid.uuid4())
+
     # 1. Permissive Authentication check
-    auth_err = _verify_auth(authorization)
+    auth_err = _verify_auth(authorization, request_id)
     if auth_err:
         return auth_err
 
@@ -87,7 +102,7 @@ async def create_chat_completion(
     try:
         body = await request.json()
     except json.JSONDecodeError:
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 "error": {
@@ -96,12 +111,13 @@ async def create_chat_completion(
                     "code": 400,
                 }
             },
+            request_id=request_id,
         )
 
     try:
         req_payload = ChatCompletionRequest(**body)
     except Exception as exc:
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={
                 "error": {
@@ -110,6 +126,7 @@ async def create_chat_completion(
                     "code": 400,
                 }
             },
+            request_id=request_id,
         )
 
     requested_model = req_payload.model.strip()
@@ -118,7 +135,7 @@ async def create_chat_completion(
     # 3. Verify candidate availability (404 if model completely unknown and no candidates)
     candidates = cascade_router.resolve_candidates(requested_model)
     if not candidates:
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_404_NOT_FOUND,
             content={
                 "error": {
@@ -127,6 +144,7 @@ async def create_chat_completion(
                     "code": 404,
                 }
             },
+            request_id=request_id,
         )
 
     # 4. Route Execution: Streaming vs Buffered
@@ -135,6 +153,7 @@ async def create_chat_completion(
             stream_gen = await cascade_router.route_stream_completion(
                 requested_model=requested_model,
                 payload=body,
+                request_id=request_id,
             )
             return StreamingResponse(
                 stream_gen,
@@ -143,18 +162,24 @@ async def create_chat_completion(
                     "Cache-Control": "no-cache",
                     "Connection": "keep-alive",
                     "X-Accel-Buffering": "no",
+                    "X-Request-ID": request_id,
                 },
             )
         else:
             response_data = await cascade_router.route_completion(
                 requested_model=requested_model,
                 payload=body,
+                request_id=request_id,
             )
-            return JSONResponse(status_code=status.HTTP_200_OK, content=response_data)
+            return _json_response(
+                status_code=status.HTTP_200_OK,
+                content=response_data,
+                request_id=request_id,
+            )
 
     except UpstreamProviderError as exc:
         logger.error("All pool candidates exhausted: %s", str(exc))
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             content={
                 "error": {
@@ -163,10 +188,11 @@ async def create_chat_completion(
                     "code": 503,
                 }
             },
+            request_id=request_id,
         )
     except Exception as exc:
         logger.exception("Unexpected error in chat completion: %s", str(exc))
-        return JSONResponse(
+        return _json_response(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
                 "error": {
@@ -175,4 +201,5 @@ async def create_chat_completion(
                     "code": 500,
                 }
             },
+            request_id=request_id,
         )
