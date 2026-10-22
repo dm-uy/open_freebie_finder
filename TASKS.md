@@ -23,11 +23,11 @@
 
 ---
 
-## T-003 — OpenRouter Free Model Discovery Engine
+## T-003 — Declarative Provider Registry and Dynamic Discovery Engine
 - **Status:** `todo`
-- **Why:** Dynamically discover active free models on OpenRouter (`pricing.prompt == 0 and pricing.completion == 0`), extracting token limits and metadata without hardcoded model identifiers.
-- **Deliverable and "Done When":** Service implementation in `backend/app/core/discovery/openrouter.py`, fully covered by unit tests using mocked OpenRouter API responses.
-- **Allowed Paths:** `backend/app/core/discovery/`, `backend/tests/`
+- **Why:** Provide a flexible schema for configuring inference providers without code changes (DEC-002), ship with 10 out-of-the-box manifests covering 90%+ of free services (OpenRouter, Groq, Gemini, Nvidia NIM, GitHub Models, Cerebras, Mistral, HuggingFace, Cloudflare, local), and dynamically discover active free models.
+- **Deliverable and "Done When":** Declarative schema (`providers.yaml` / Pydantic models), `GenericOpenAIProviderAdapter`, OpenRouter discovery service (`pricing.prompt == 0`), and unit tests confirming model parsing and filtering.
+- **Allowed Paths:** `backend/app/core/providers/`, `backend/app/core/discovery/`, `backend/tests/`
 
 ---
 

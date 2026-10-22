@@ -4,16 +4,16 @@
 
 ---
 
-### P1 — Core OpenAI Proxy and OpenRouter Discovery Integration
-* **Deliverable:** A functional FastAPI service exposing `/v1/chat/completions` (supporting standard buffered and SSE streaming responses), an automated discovery worker polling free models from the OpenRouter API, an in-memory cascade failover engine handling `429`/`5xx` retries, and the synthetic `auto:free` routing model.
+### P1 — Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration
+* **Deliverable:** A functional FastAPI service exposing `/v1/chat/completions` (supporting standard buffered and SSE streaming responses), a declarative provider schema (`providers.yaml`), out-of-the-box bundle covering 90%+ free providers (OpenRouter, Groq, Google Gemini, Nvidia NIM, GitHub Models, Cerebras, Mistral, HuggingFace, Cloudflare, local Ollama/vLLM), an automated discovery worker polling free models from the OpenRouter API, an in-memory cascade failover engine handling `429`/`5xx` retries, and the synthetic `auto:free` routing model.
 * **Done When:** An HTTP request dispatched via `curl` or the official OpenAI Python SDK to `http://localhost:8000/v1/chat/completions` receives a valid response from an OpenRouter free model, and an intercepted `429` error on the primary candidate seamlessly fails over to an alternative free candidate without client disruption.
 * **Status:** `active` ← **Current Focus**
 
 ---
 
-### P2 — Additional Cloud Providers (Groq, Google AI Studio, Nvidia NIM) and Circuit Breaker
-* **Deliverable:** Integration adapters for Groq (ultra-low latency free tier), Google Gemini API (Google AI Studio free tier up to 15 RPM), and Nvidia NIM API. Implementation of an adaptive Circuit Breaker with exponential cool-off intervals and upstream availability tracking.
-* **Done When:** Requests can cascade across heterogeneous providers (e.g., OpenRouter -> Groq -> Google Gemini) when one provider hits quota exhaustion.
+### P2 — Provider Validation API, Circuit Breaker, and Onboarding Agent
+* **Deliverable:** Live activation across all bundled providers, adaptive Circuit Breaker with exponential cool-off intervals, validation endpoint (`POST /api/admin/providers/validate`), and the prototype for the automated Provider Onboarding Agent (`POST /api/admin/providers/auto-discover`).
+* **Done When:** Requests can cascade across heterogeneous providers (e.g., OpenRouter -> Groq -> Google Gemini) upon quota exhaustion, and a new custom provider can be validated via API or analyzed automatically by the onboarding agent.
 * **Depends On:** P1
 * **Status:** `planned`
 

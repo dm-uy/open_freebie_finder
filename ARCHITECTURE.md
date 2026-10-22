@@ -54,8 +54,22 @@
    * Enforces Circuit Breaker cooldowns, filtering out endpoints recovering from recent `429` or `5xx` spikes.
    * Validates context window constraints by dropping models whose maximum token window is smaller than the incoming prompt.
    * Executes the cascade retry sequence: intercepts `429` / `5xx` / timeout events, marks candidate models in cooldown, and dispatches the request to the next candidate in the queue.
-5. **`core/adapters/` (Provider Adapters):**
-   * Normalizes differences across provider request/response formats. Providers like OpenRouter, Groq, and Nvidia NIM natively adhere to OpenAI schema; adapters for Google Gemini or custom endpoints handle message schema and system prompt conversions.
+5. **`core/providers/` (Declarative Provider Registry & Universal Adapter):**
+   * Configured via declarative manifests (`providers.yaml` / JSON schema) without requiring Python code modifications for new endpoints.
+   * `GenericOpenAIProviderAdapter`: Universal async adapter executing HTTP requests, headers injection, streaming SSE transformations, and error handling.
+   * Out-of-the-box pre-configured manifests covering 90%+ of zero-cost inference needs:
+     1. **OpenRouter:** Dynamic `:free` models filter (`pricing.prompt == 0 and pricing.completion == 0`).
+     2. **Groq Cloud:** Ultra-fast free tier (Llama 3.3 70B, Gemma 2, Llama 3.1 8B).
+     3. **Google AI Studio (Gemini):** 15 RPM / 1M context free tier via OpenAI-compatible endpoint.
+     4. **NVIDIA NIM:** Hosted open weights (Llama 3.3, Nemotron 70B, Mistral Large).
+     5. **GitHub Models:** Azure AI free tier via GitHub PAT (GPT-4o-mini, Phi-4, Llama 3.3).
+     6. **Cerebras Cloud:** Ultra-fast ~2000 t/s Llama 3.1 free tier.
+     7. **Mistral AI:** Free experiment tier (Mistral Small, Codestral).
+     8. **Hugging Face Inference API:** Serverless free open models.
+     9. **Cloudflare Workers AI:** 10,000 free daily neurons.
+     10. **Local / Self-hosted:** Fallback to local Ollama, vLLM, or LM Studio.
+   * Validation interface (`POST /api/admin/providers/validate`): Tests endpoint connectivity, model availability, and single-token completion.
+   * Roadmap readiness: Foundation for internal "Onboarding Agent" (`POST /api/admin/providers/auto-discover`).
 6. **`core/benchmarks/` (Quality & Benchmark Index):**
    * In-memory benchmark scoring table (Chatbot Arena Elo, MMLU, HumanEval) enabling tiered model routing into quality and specialized coding pools.
 7. **`storage/` (SQLite Telemetry & Config Store):**
@@ -163,3 +177,4 @@ Client Request -> [/v1/chat/completions] (model="auto:free")
 
 ## 7. Architectural Decisions and Rationales
 * See [DEC-001: Technology Stack and Architecture Pattern](docs/decisions/DEC-001-stack-and-architecture.md) for rationale concerning FastAPI, React, SQLite, and OpenAI reverse-proxy pattern selection.
+* See [DEC-002: Declarative Provider Schema and Automated Onboarding](docs/decisions/DEC-002-declarative-provider-schema.md) for declarative configuration, universal adapter, out-of-the-box provider bundle, and provider onboarding evolution.
