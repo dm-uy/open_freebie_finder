@@ -242,6 +242,7 @@ $START_BODY
 - **Risk:** Upstream OpenRouter API rate-limits unauthenticated calls.
   - *Mitigation:* The discovery service supports optional `OPENROUTER_API_KEY` header from settings.
 - **Deficiencies:** Cloudflare requires an account ID in URL; manifest provides template placeholder `{account_id}` resolved from `Settings.cloudflare_account_id`.
+- **Scope Note:** `backend/app/config.py` and `.env.example` were augmented with `cloudflare_account_id` in commit `99bd025` to support clean Cloudflare `{account_id}` manifest template resolution.
 - **Deviations:** None from roadmap.
 
 $END_BODY

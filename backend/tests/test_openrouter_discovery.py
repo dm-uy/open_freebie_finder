@@ -116,6 +116,56 @@ async def test_context_window_extraction():
 
 
 @pytest.mark.asyncio
+async def test_empty_response_purges_old_models():
+    """Verify that a successful upstream response with no free models purges old cached models."""
+    registry = ProviderRegistry()
+    # Pre-populate with an existing openrouter model
+    await registry.register_models([
+        DiscoveredModel(
+            id="old-model/now-paid:free",
+            canonical_name="old-model/now-paid",
+            provider_id="openrouter",
+            context_window=8192,
+            is_free=True,
+        )
+    ])
+    assert len(registry.get_models()) == 1
+
+    def handler_empty(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json={"data": []})
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler_empty)) as client:
+        service = OpenRouterDiscoveryService(registry=registry, http_client=client)
+        models = await service.discover_free_models()
+        assert models == []
+
+    # Cache for openrouter was successfully purged
+    assert registry.get_models() == []
+
+
+@pytest.mark.asyncio
+async def test_float_string_context_window():
+    """Verify float-like context lengths (e.g. '131072.0') parse safely to integers."""
+    registry = ProviderRegistry()
+    mock_payload = {
+        "data": [
+            {
+                "id": "test/float-context:free",
+                "pricing": {"prompt": "0", "completion": "0"},
+                "context_length": "65536.0",
+            }
+        ]
+    }
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(200, json=mock_payload))) as client:
+        service = OpenRouterDiscoveryService(registry=registry, http_client=client)
+        models = await service.discover_free_models()
+
+    assert len(models) == 1
+    assert models[0].context_window == 65536
+
+
+@pytest.mark.asyncio
 async def test_resilience_on_errors():
     """AC-7: Verify discovery handles 429, 500, and network errors gracefully while preserving cache."""
     registry = ProviderRegistry()

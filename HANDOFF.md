@@ -14,18 +14,15 @@ Nothing is blocking. T-003 is verified and complete. Ready to proceed to task `T
   * Passed all 10 tests in `backend/tests` (0.05s).
   * Executed Live Probe confirming discovery of 20 live zero-cost models from OpenRouter.
 * **Actual Environment State:**
-  * Git: `main` branch.
-  * Tests: 10 passed in 0.05s.
+  * Git: `main` branch, HEAD `92d7c56` (prior to refinement commit).
+  * Local Git user: `dm-uy`.
+  * Open-source license: MIT.
+  * Tests: 12 passed in 0.07s.
 
 ## Queue
 * **Active Batch:** B-001
 * **Next Permitted Step:** `T-004` — Prepare specification and implement OpenAI proxy endpoints (`/v1/chat/completions` and `/v1/models`), Two-Tier Failover, First-Token stream pre-buffering, and synthetic alias `auto:free`.
 * **Deferred Scope:** P2 (Groq/Nvidia live activation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
-
-## Queue
-* **Active Batch:** B-001
-* **Next Permitted Step:** `T-003` — Declarative provider models, 10 built-in provider manifests (`providers.yaml`), `GenericOpenAIProviderAdapter`, OpenRouter discovery service, and unit tests.
-* **Deferred Scope:** P2 (Groq/Nvidia live validation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Traps
 * **Dynamic Model Availability:** OpenRouter frequently introduces and deprecates free models (suffix `:free`). Hardcoding model identifiers will lead to silent breakages; the dynamic discovery engine is mandatory.

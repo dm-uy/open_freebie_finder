@@ -81,16 +81,25 @@ class ProviderRegistry:
 
         return active
 
-    async def register_models(self, models: list[DiscoveredModel]) -> None:
-        """Update the in-memory cache of discovered models using asyncio.Lock."""
+    async def register_models(
+        self,
+        models: list[DiscoveredModel],
+        provider_id: Optional[str] = None,
+    ) -> None:
+        """Update the in-memory cache of discovered models under asyncio.Lock.
+
+        If provider_id is specified (or inferred from models), existing cached entries
+        for that provider are replaced (allowing purging of deprecated models).
+        """
         async with self._lock:
-            # Group or update existing models: remove old entries for providers being updated
-            updated_providers = {m.provider_id for m in models}
-            preserved = [m for m in self._models_cache if m.provider_id not in updated_providers]
+            target_providers = {m.provider_id for m in models}
+            if provider_id:
+                target_providers.add(provider_id)
+            preserved = [m for m in self._models_cache if m.provider_id not in target_providers]
             self._models_cache = preserved + models
 
     def get_models(self) -> list[DiscoveredModel]:
-        """Return all discovered models directly from in-memory cache (< 2ms, zero I/O)."""
+        """Return a snapshot of discovered models directly from memory (< 2ms, zero I/O)."""
         return list(self._models_cache)
 
     def get_model_candidates(self, canonical_name: str) -> list[DiscoveredModel]:

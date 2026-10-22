@@ -45,7 +45,7 @@ class OpenRouterDiscoveryService:
 
             response.raise_for_status()
             data = response.json()
-        except (httpx.HTTPStatusError, httpx.RequestError, Exception) as exc:
+        except (httpx.HTTPStatusError, httpx.RequestError, ValueError) as exc:
             logger.warning(
                 "OpenRouter discovery query failed gracefully (retaining existing cache): %s",
                 str(exc),
@@ -80,13 +80,16 @@ class OpenRouterDiscoveryService:
             if canonical_name.endswith(":free"):
                 canonical_name = canonical_name[:-5]
 
-            # Context window extraction with safe fallback
+            # Context window extraction with safe float/int parsing and fallback
             raw_context = item.get("context_length")
             try:
-                context_window = int(raw_context) if raw_context else 4096
-                if context_window <= 0:
+                if raw_context is not None:
+                    context_window = int(float(raw_context))
+                    if context_window <= 0:
+                        context_window = 4096
+                else:
                     context_window = 4096
-            except (ValueError, TypeError):
+            except (ValueError, TypeError, OverflowError):
                 context_window = 4096
 
             free_models.append(
@@ -104,7 +107,7 @@ class OpenRouterDiscoveryService:
                 )
             )
 
-        if free_models:
-            await self.registry.register_models(free_models)
+        # On successful response parsing, update the registry (purges old models even if free_models is empty)
+        await self.registry.register_models(free_models, provider_id="openrouter")
 
         return free_models
