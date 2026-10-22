@@ -41,5 +41,6 @@
 ## T-004 — OpenAI Proxy Endpoints and Cascade Failover Router
 - **Status:** `todo`
 - **Why:** Ingest `/v1/chat/completions` and `/v1/models` requests from external harnesses (DeepSeek Harness, Cursor, etc.), forward them to active free-tier models with Two-Tier Failover (Tier 1: same model cross-provider; Tier 2: alternative model fallback), model name masking, and first-token stream pre-buffering (DEC-003).
-- **Deliverable and "Done When":** Operational `POST /v1/chat/completions` and non-blocking `GET /v1/models`; tests simulating upstream 429 and in-stream errors confirm seamless transparent failover with canonical model name preservation.
-- **Allowed Paths:** `backend/app/api/v1/`, `backend/app/core/balancer/`, `backend/tests/`
+- **Specification:** [specs/T-004-openai-proxy-and-failover.md](specs/T-004-openai-proxy-and-failover.md) (Version 1.0.0, Approval: pending)
+- **Deliverable and "Done When":** Operational `POST /v1/chat/completions` and non-blocking `GET /v1/models`; tests simulating upstream 429 and in-stream errors confirm seamless transparent failover with canonical model name preservation (AC-1..10).
+- **Allowed Paths:** `backend/app/api/v1/`, `backend/app/core/balancer/`, `backend/app/core/adapters/`, `backend/app/main.py`, `backend/tests/`

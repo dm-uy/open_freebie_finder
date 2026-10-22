@@ -1,27 +1,23 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Nothing is blocking. T-003 is verified and complete. Ready to proceed to task `T-004` (OpenAI Proxy Endpoints, Two-Tier Cascade Failover Router, and Streaming SSE Pre-buffering).
+Awaiting review and approval of specification `specs/T-004-openai-proxy-and-failover.md` (v1.0.0) to proceed with implementation of task T-004.
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), and `T-003` (Declarative Provider Registry and Dynamic Discovery Engine). Next up: `T-004` (OpenAI Proxy Endpoints & Failover Router).
+* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), and `T-003` (Declarative Provider Registry and Discovery Engine). Prepared specification `specs/T-004-openai-proxy-and-failover.md` (v1.0.0, Approval: pending) for task `T-004`.
 * **Completed Work:**
-  * Implemented Pydantic v2 schemas for declarative providers (`backend/app/core/providers/models.py`).
-  * Created `backend/app/core/providers/providers.yaml` with 10 default manifests covering 90%+ free services.
-  * Implemented `ProviderRegistry` with thread-safe `asyncio.Lock` in-memory cache and non-blocking lookups.
-  * Implemented `OpenRouterDiscoveryService` extracting only models with `pricing.prompt == "0" and pricing.completion == "0"`, stripping `:free` to canonical names, and safely extracting context window.
-  * Passed all 10 tests in `backend/tests` (0.05s).
-  * Executed Live Probe confirming discovery of 20 live zero-cost models from OpenRouter.
+  * Resolved all review findings from T-003 (purging empty models, explicit exceptions, float context, clean HANDOFF, 12 passing tests).
+  * Authored complete specification for T-004 [specs/T-004-openai-proxy-and-failover.md](specs/T-004-openai-proxy-and-failover.md) adhering to all Section 4 requirements (MIXED profile, Input RECON at commit `db46b03`, BR-1..6, Boundaries, Expected Architecture, Scope MAY EDIT/DO NOT TOUCH, AC-1..10, Traceability Matrix, Delivery Probes, Scenarios for DeepSeek Harness, failover, and streaming pre-buffer).
 * **Actual Environment State:**
-  * Git: `main` branch, HEAD `92d7c56` (prior to refinement commit).
+  * Git: `main` branch, HEAD `db46b03` (prior to T-004 spec commit).
   * Local Git user: `dm-uy`.
   * Open-source license: MIT.
-  * Tests: 12 passed in 0.07s.
+  * Tests: 12 passed in 0.06s.
 
 ## Queue
 * **Active Batch:** B-001
-* **Next Permitted Step:** `T-004` — Prepare specification and implement OpenAI proxy endpoints (`/v1/chat/completions` and `/v1/models`), Two-Tier Failover, First-Token stream pre-buffering, and synthetic alias `auto:free`.
+* **Next Permitted Step:** `T-004` — Implementation of OpenAI proxy endpoints (`/v1/chat/completions` and `/v1/models`), CascadeRouter with Two-Tier Failover, and streaming pre-buffering.
 * **Deferred Scope:** P2 (Groq/Nvidia live activation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Traps
