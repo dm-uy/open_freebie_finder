@@ -39,14 +39,15 @@
 ---
 
 ## T-004 — OpenAI Proxy Endpoints and Cascade Failover Router
-- **Status:** `review`
+- **Status:** `done`
 - **Why:** Ingest `/v1/chat/completions` and `/v1/models` requests from external harnesses (DeepSeek Harness, Cursor, etc.), forward them to active free-tier models with Two-Tier Failover (Tier 1: same model cross-provider; Tier 2: alternative model fallback), model name masking, and first-token stream pre-buffering (DEC-003).
 - **Specification:** [specs/T-004-openai-proxy-and-failover.md](specs/T-004-openai-proxy-and-failover.md) (Version 1.1.0, Approval: approved)
 - **Deliverable and "Done When":** Operational `POST /v1/chat/completions` and non-blocking `GET /v1/models`; tests simulating upstream 429 and in-stream errors confirm seamless transparent failover with canonical model name preservation (AC-1..11).
 - **Allowed Paths:** `backend/app/api/v1/`, `backend/app/core/balancer/`, `backend/app/core/adapters/`, `backend/app/main.py`, `backend/app/config.py`, `.env.example`, `backend/tests/`
 - **Execution and Verification:**
-  - Automated tests: `pytest backend/tests` — 26 passed in 0.13s (AC-1..11).
+  - Automated tests: `pytest backend/tests` — 27 passed in 0.12s (AC-1..11).
   - Probe 3: `GET /v1/models` returns HTTP 200 with `auto:free` in-memory without remote calls.
   - Probe 4: `POST /v1/chat/completions` with unknown model returns HTTP 404 in standard OpenAI error envelope.
-  - Debug fixes: strictly pre-buffers until non-empty `delta.content` is received (protecting against in-stream 429 after role-only chunks); monotonic clock cooldowns; constant-time auth check; max 3 failover attempts limit.
-- **Evidence:** 26 passing tests in `backend/tests`. Awaiting owner resolution on live probe vs ASGI closure for P1.
+  - Real Socket Live Probe: documented in [notes/T-004-live-probe.md](notes/T-004-live-probe.md) confirming live OpenRouter completion (`cohere/north-mini-code`), 21 models in `/v1/models`, 47 SSE chunks.
+  - Debug fixes: strictly pre-buffers until non-empty `delta.content` is received; monotonic clock cooldowns; constant-time auth check; max 3 failover attempts limit; background discovery wired into `main.py` lifespan (F-1).
+- **Evidence:** Tested, verified, and accepted by owner on 2026-10-22 (27 passing tests + `notes/T-004-live-probe.md`).
