@@ -1,22 +1,16 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Nothing is currently blocking. DEC-003 (Canonical Model Mapping, Credential Encapsulation, and Harness Interoperability) documented and committed. Ready to execute `T-003` (Declarative Provider Registry, 10-provider manifests bundle, and Dynamic Discovery Engine).
+Awaiting review and approval of specification `specs/T-003-declarative-providers-and-discovery.md` to proceed with code generation and implementation for task T-003.
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Next up: `T-003` (Declarative provider schema, 10 manifests bundle, and OpenRouter discovery).
+* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Prepared specification `specs/T-003-declarative-providers-and-discovery.md` (Approval: pending) for task `T-003`.
 * **Completed Work:**
-  * Created Python 3.15 virtualenv `.venv` and installed dependencies (`backend/requirements.txt`).
-  * Built application configuration module (`backend/app/config.py`) supporting `.env` and environment variables.
-  * Implemented application factory with CORS middleware and `/health` endpoint (`backend/app/main.py`).
-  * Configured `pytest.ini` and verified with passing test suite (`backend/tests/test_health.py`).
-  * Created `.env.example` documenting all provider keys and settings.
-  * Recorded DEC-003 specifying DeepSeek Harness interop, non-blocking `/v1/models`, upstream credential encapsulation, canonical model masking, two-tier failover, and superposition brainstorming protocol.
+  * Updated `PROJECT-PROCESS.md` with the feature specification protocol and added `SPEC-EXAMPLE.md`.
+  * Authored complete formal specification [specs/T-003-declarative-providers-and-discovery.md](specs/T-003-declarative-providers-and-discovery.md) adhering to all Section 4 requirements (MIXED profile, Input RECON, BR-1..6, Boundaries, Expected Architecture, Scope MAY EDIT/DO NOT TOUCH, AC-1..8, Delivery/Live Probe, Risks/Deficiencies).
 * **Actual Environment State:**
-  * Git: Initialized on `main` branch.
-  * Local Git user: `dm-uy`.
-  * Open-source license: MIT.
+  * Git: Clean on `main` branch (HEAD: `cb75501`).
   * Tests: 1 passed in 0.01s.
 
 ## Queue
