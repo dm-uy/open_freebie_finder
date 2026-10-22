@@ -1,0 +1,125 @@
+# ==============================================================================
+# Open Freebie Finder: Default Out-of-the-Box Provider Manifests (90%+ Coverage)
+# ==============================================================================
+
+providers:
+  - id: "openrouter"
+    name: "OpenRouter"
+    base_url: "https://openrouter.ai/api/v1"
+    models_endpoint: "https://openrouter.ai/api/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "OPENROUTER_API_KEY"
+    discovery:
+      type: "openrouter_free"
+      model_id_field: "id"
+      context_length_field: "context_length"
+    is_enabled: true
+    description: "OpenRouter multi-model hub with dynamic zero-cost :free models filter."
+
+  - id: "groq"
+    name: "Groq Cloud"
+    base_url: "https://api.groq.com/openai/v1"
+    models_endpoint: "https://api.groq.com/openai/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "GROQ_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Ultra-fast inference LPUs with generous free tier (Llama 3.3 70B, Gemma 2, Llama 3.1 8B)."
+
+  - id: "nvidia_nim"
+    name: "NVIDIA NIM"
+    base_url: "https://integrate.api.nvidia.com/v1"
+    models_endpoint: "https://integrate.api.nvidia.com/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "NVIDIA_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "NVIDIA hosted open weights (Llama 3.3 70B, Nemotron 70B, Mistral Large)."
+
+  - id: "google_gemini"
+    name: "Google AI Studio (Gemini)"
+    base_url: "https://generativelanguage.googleapis.com/v1beta/openai/"
+    models_endpoint: "https://generativelanguage.googleapis.com/v1beta/openai/models"
+    auth:
+      type: "bearer"
+      api_key_env: "GOOGLE_AI_STUDIO_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Google AI Studio free tier up to 15 RPM with 1M token context on Gemini 2.0 Flash."
+
+  - id: "github_models"
+    name: "GitHub Models"
+    base_url: "https://models.inference.ai.azure.com"
+    models_endpoint: "https://models.inference.ai.azure.com/models"
+    auth:
+      type: "bearer"
+      api_key_env: "GITHUB_PAT_TOKEN"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Free Azure AI inference via GitHub Personal Access Token (GPT-4o-mini, Phi-4, Llama 3.3)."
+
+  - id: "cerebras"
+    name: "Cerebras Cloud"
+    base_url: "https://api.cerebras.ai/v1"
+    models_endpoint: "https://api.cerebras.ai/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "CEREBRAS_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Ultra-high throughput ~2000 tokens/sec free tier on Llama 3.1 8B/70B."
+
+  - id: "mistral"
+    name: "Mistral AI"
+    base_url: "https://api.mistral.ai/v1"
+    models_endpoint: "https://api.mistral.ai/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "MISTRAL_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Mistral experiment tier with access to Mistral Small and Codestral."
+
+  - id: "huggingface"
+    name: "Hugging Face Inference API"
+    base_url: "https://api-inference.huggingface.co/v1"
+    models_endpoint: "https://api-inference.huggingface.co/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "HUGGINGFACE_API_KEY"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Serverless free community models hosted on Hugging Face infrastructure."
+
+  - id: "cloudflare"
+    name: "Cloudflare Workers AI"
+    base_url: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1"
+    models_endpoint: "https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/v1/models"
+    auth:
+      type: "bearer"
+      api_key_env: "CLOUDFLARE_API_TOKEN"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Edge serverless AI inference offering 10,000 free daily Neurons."
+
+  - id: "local_ollama"
+    name: "Local Ollama / vLLM"
+    base_url: "http://localhost:11434/v1"
+    models_endpoint: "http://localhost:11434/v1/models"
+    auth:
+      type: "none"
+    discovery:
+      type: "all_available"
+    is_enabled: true
+    description: "Zero-cost local model runner fallback (Ollama, LM Studio, or vLLM)."

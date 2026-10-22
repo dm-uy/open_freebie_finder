@@ -1,17 +1,26 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Awaiting review and approval of updated specification `specs/T-003-declarative-providers-and-discovery.md` (v1.1.0 addressing all review points) to proceed with implementation of task T-003.
+Nothing is blocking. T-003 is verified and complete. Ready to proceed to task `T-004` (OpenAI Proxy Endpoints, Two-Tier Cascade Failover Router, and Streaming SSE Pre-buffering).
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Prepared updated specification `specs/T-003-declarative-providers-and-discovery.md` (v1.1.0, Approval: pending) for task `T-003`.
+* **Active Task:** Completed `T-001` (Docs & Architecture), `T-002` (FastAPI backend scaffold), and `T-003` (Declarative Provider Registry and Dynamic Discovery Engine). Next up: `T-004` (OpenAI Proxy Endpoints & Failover Router).
 * **Completed Work:**
-  * Updated `PROJECT-PROCESS.md` with the feature specification protocol and added `SPEC-EXAMPLE.md`.
-  * Addressed all 10 review findings: added missing USE_CASE artifacts (`CASE_QUERY_MODELS`, `CASE_CRAWL_OPENROUTER`), added mandatory Stack / Dependencies section, updated and dated Input RECON to commit `99bd025` (2026-10-22), aligned Delivery Probe contracts with `get_registry()` and `get_manifests()`, standardized manifest filename to `providers.yaml`, defined `filter_expression` semantics, resolved Cloudflare `account_id` via `Settings`, added Traceability Matrix (BR -> AC -> Test), added `AC-9` for candidate lookup, and added optional live OpenRouter probe.
+  * Implemented Pydantic v2 schemas for declarative providers (`backend/app/core/providers/models.py`).
+  * Created `backend/app/core/providers/providers.yaml` with 10 default manifests covering 90%+ free services.
+  * Implemented `ProviderRegistry` with thread-safe `asyncio.Lock` in-memory cache and non-blocking lookups.
+  * Implemented `OpenRouterDiscoveryService` extracting only models with `pricing.prompt == "0" and pricing.completion == "0"`, stripping `:free` to canonical names, and safely extracting context window.
+  * Passed all 10 tests in `backend/tests` (0.05s).
+  * Executed Live Probe confirming discovery of 20 live zero-cost models from OpenRouter.
 * **Actual Environment State:**
-  * Git: Clean working tree.
-  * Tests: 1 passed in 0.01s.
+  * Git: `main` branch.
+  * Tests: 10 passed in 0.05s.
+
+## Queue
+* **Active Batch:** B-001
+* **Next Permitted Step:** `T-004` — Prepare specification and implement OpenAI proxy endpoints (`/v1/chat/completions` and `/v1/models`), Two-Tier Failover, First-Token stream pre-buffering, and synthetic alias `auto:free`.
+* **Deferred Scope:** P2 (Groq/Nvidia live activation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Queue
 * **Active Batch:** B-001

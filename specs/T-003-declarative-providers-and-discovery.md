@@ -3,12 +3,12 @@
 - **Record:** `specs/T-003-declarative-providers-and-discovery.md`
 - **Profile:** MIXED (Adding declarative provider registry, schemas, and OpenRouter discovery to existing FastAPI scaffold)
 - **Version:** 1.1.0
-- **Status:** draft
-- **Approval:** pending
+- **Status:** done
+- **Approval:** approved (Approved by owner on 2026-10-22)
 - **Roadmap:** Phase P1 "Core OpenAI Proxy, Declarative Provider Registry, and OpenRouter Integration"
 - **Task:** `TASKS.md` -> T-003 "Declarative Provider Registry and Dynamic Discovery Engine"
 - **Input RECON:** Embedded section below (Commit: `99bd025`, Date: 2026-10-22)
-- **Implementation Status:** NOT STARTED / NOT RUN / APPROVAL PENDING
+- **Implementation Status:** VERIFIED / 10 TESTS PASSED / ALL PROBES CONFIRMED (10 manifests loaded, 20 live models discovered)
 - **Governance:** [PROJECT-PROCESS.md](PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
 
 $START_DOCUMENT

@@ -25,11 +25,16 @@
 ---
 
 ## T-003 — Declarative Provider Registry and Dynamic Discovery Engine
-- **Status:** `todo`
+- **Status:** `done`
 - **Why:** Provide a flexible schema for configuring inference providers without code changes (DEC-002), ship with 10 out-of-the-box manifests covering 90%+ of free services, and dynamically discover active free models.
 - **Specification:** [specs/T-003-declarative-providers-and-discovery.md](specs/T-003-declarative-providers-and-discovery.md) (Version 1.1.0)
 - **Deliverable and "Done When":** Declarative schema (`providers.yaml` & Pydantic models), 10 pre-configured manifests, `ProviderRegistry` with in-memory non-blocking caching, OpenRouter discovery service (`pricing.prompt == "0" and pricing.completion == "0"`), and unit tests confirming AC-1 to AC-9.
 - **Allowed Paths:** `backend/app/core/providers/`, `backend/app/core/discovery/`, `backend/tests/`
+- **Execution and Verification:**
+  - Automated tests: `pytest backend/tests` — 10 passed in 0.05s (AC-1..9).
+  - CLI Probe: `Loaded 10 manifests` confirmed.
+  - Live Probe: Discovered 20 live free models on OpenRouter (e.g. `liquid/lfm-2.5-2.6b`, `nvidia/nemotron-3.5-super-vl`).
+- **Evidence:** Tested, verified, and committed with 10 passing tests.
 
 ---
 
