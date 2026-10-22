@@ -1,16 +1,16 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Awaiting review and approval of specification `specs/T-003-declarative-providers-and-discovery.md` to proceed with code generation and implementation for task T-003.
+Awaiting review and approval of updated specification `specs/T-003-declarative-providers-and-discovery.md` (v1.1.0 addressing all review points) to proceed with implementation of task T-003.
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Prepared specification `specs/T-003-declarative-providers-and-discovery.md` (Approval: pending) for task `T-003`.
+* **Active Task:** Completed `T-001` (Docs & Architecture) and `T-002` (FastAPI backend scaffold). Prepared updated specification `specs/T-003-declarative-providers-and-discovery.md` (v1.1.0, Approval: pending) for task `T-003`.
 * **Completed Work:**
   * Updated `PROJECT-PROCESS.md` with the feature specification protocol and added `SPEC-EXAMPLE.md`.
-  * Authored complete formal specification [specs/T-003-declarative-providers-and-discovery.md](specs/T-003-declarative-providers-and-discovery.md) adhering to all Section 4 requirements (MIXED profile, Input RECON, BR-1..6, Boundaries, Expected Architecture, Scope MAY EDIT/DO NOT TOUCH, AC-1..8, Delivery/Live Probe, Risks/Deficiencies).
+  * Addressed all 10 review findings: added missing USE_CASE artifacts (`CASE_QUERY_MODELS`, `CASE_CRAWL_OPENROUTER`), added mandatory Stack / Dependencies section, updated and dated Input RECON to commit `99bd025` (2026-10-22), aligned Delivery Probe contracts with `get_registry()` and `get_manifests()`, standardized manifest filename to `providers.yaml`, defined `filter_expression` semantics, resolved Cloudflare `account_id` via `Settings`, added Traceability Matrix (BR -> AC -> Test), added `AC-9` for candidate lookup, and added optional live OpenRouter probe.
 * **Actual Environment State:**
-  * Git: Clean on `main` branch (HEAD: `cb75501`).
+  * Git: Clean working tree.
   * Tests: 1 passed in 0.01s.
 
 ## Queue
