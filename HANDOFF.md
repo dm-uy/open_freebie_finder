@@ -1,26 +1,27 @@
 # Project State Handoff (HANDOFF)
 
 ## Blocked on the owner
-Nothing is currently blocking. Git repository initialized with `user.name = "dm-uy"`, MIT License added, initial project documentation complete, DEC-002 (Declarative Provider Schema & 10 out-of-the-box manifests) recorded. Ready to proceed to task `T-002` (FastAPI backend scaffold).
+Nothing is currently blocking. T-002 (FastAPI backend scaffold) complete and verified with pytest. Ready to proceed to task `T-003` (Declarative Provider Registry, 10 out-of-the-box manifests, and Dynamic Discovery Engine).
 
 ## State
 * **Active Phase:** P1 (Core OpenAI Proxy and OpenRouter Discovery Integration).
-* **Active Task:** `T-001` (process documentation, architecture design, open-source setup under MIT, DEC-001 & DEC-002) is completed. Next up: `T-002` (FastAPI backend scaffold).
+* **Active Task:** Completed `T-001` (Documentation & Architecture) and `T-002` (FastAPI backend scaffold, config, `/health`, and test suite). Next up: `T-003` (Declarative provider schema, 10 manifests bundle, and OpenRouter discovery).
 * **Completed Work:**
-  * Analyzed user requirements: zero-cost LLM inference via a smart load-balancing proxy with automatic discovery of free models (OpenRouter, Groq, Nvidia, Google), benchmark ranking, and a React web interface.
-  * Approved technology stack: Python/FastAPI (backend) + React (frontend) + SQLite.
-  * Initialized Git repository, configured local user `dm-uy`, added `.gitignore` and MIT `LICENSE`.
-  * Formulated complete English documentation suite: `AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `README.md`, `docs/decisions/DEC-001-stack-and-architecture.md`, and `docs/decisions/DEC-002-declarative-provider-schema.md`.
-  * Architected declarative provider schema with 10 out-of-the-box manifests covering 90%+ free inference needs (OpenRouter, Groq, Gemini, Nvidia NIM, GitHub Models, Cerebras, Mistral, HuggingFace, Cloudflare, local Ollama/vLLM) and validation API/onboarding agent pathway.
+  * Created Python 3.15 virtualenv `.venv` and installed dependencies (`backend/requirements.txt`).
+  * Built application configuration module (`backend/app/config.py`) supporting `.env` and environment variables.
+  * Implemented application factory with CORS middleware and `/health` endpoint (`backend/app/main.py`).
+  * Configured `pytest.ini` and verified with passing test suite (`backend/tests/test_health.py`).
+  * Created `.env.example` documenting all provider keys and settings.
 * **Actual Environment State:**
   * Git: Initialized on `main` branch.
   * Local Git user: `dm-uy`.
   * Open-source license: MIT.
+  * Tests: 1 passed in 0.01s.
 
 ## Queue
 * **Active Batch:** B-001
-* **Next Permitted Step:** `T-002` — Create base structure for FastAPI backend (`backend/requirements.txt`, `backend/app/main.py`, initial test setup, and health check endpoint).
-* **Deferred Scope:** P2 (Groq/Nvidia/Gemini), P3 (Benchmarks and Quality Pools), P4 (React Dashboard), P5 (Docker Packaging and Caching).
+* **Next Permitted Step:** `T-003` — Declarative provider models, 10 built-in provider manifests (`providers.yaml`), `GenericOpenAIProviderAdapter`, OpenRouter discovery service, and unit tests.
+* **Deferred Scope:** P2 (Groq/Nvidia live validation & circuit breaker), P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker).
 
 ## Traps
 * **Dynamic Model Availability:** OpenRouter frequently introduces and deprecates free models (suffix `:free`). Hardcoding model identifiers will lead to silent breakages; the dynamic discovery engine is mandatory.
