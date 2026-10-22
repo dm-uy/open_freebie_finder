@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     mistral_api_key: Optional[str] = None
     huggingface_api_key: Optional[str] = None
     cloudflare_api_token: Optional[str] = None
+    cloudflare_account_id: Optional[str] = None
 
     model_config = SettingsConfigDict(
         env_file=".env",

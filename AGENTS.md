@@ -43,7 +43,7 @@ Open Freebie Finder is a local/server-side smart proxy and load balancer for zer
 * Pushing commits to remote repositories without approval.
 
 ## Agent Operating Rules
-* **Language rule:** All project documentation (`AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `docs/`, `specs/`, `notes/`) MUST strictly be maintained in English. User communication in chat may be conducted in other languages, but all written project artifacts and documentation must remain in English.
+* **Language rule:** All project documentation (`AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `docs/`, `specs/`, `notes/`) and codebase MUST strictly be maintained in English. User communication in chat may be conducted in Russian or other languages, but all written project artifacts, specifications, and code must remain in English. (Note: Owner process governance files `PROJECT-PROCESS.md` and `SPEC-EXAMPLE.md` are preserved in their original Russian form as an intentional framework exception).
 * Restore context from repository files rather than relying on ephemeral chat history.
 * Link every task to a phase in `ROADMAP.md` and core value in `VISION.md`.
 * Distinguish between proposed design (`proposal`) and actual working implementation (`as-built`).
