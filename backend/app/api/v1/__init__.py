@@ -2,9 +2,11 @@
 from fastapi import APIRouter
 from backend.app.api.v1.chat import router as chat_router
 from backend.app.api.v1.models import router as models_router
+from backend.app.api.v1.tasks import router as tasks_router
 
 v1_router = APIRouter()
 v1_router.include_router(chat_router)
 v1_router.include_router(models_router)
+v1_router.include_router(tasks_router)
 
 __all__ = ["v1_router"]

@@ -1,0 +1,10 @@
+# Identity assertions only: entries never create model availability or entitlement.
+aliases:
+  - provider_id: groq
+    raw_id: openai/gpt-oss-20b
+    canonical_name: openai/gpt-oss-20b
+    source: https://console.groq.com/docs/models
+  - provider_id: nvidia_nim
+    raw_id: openai/gpt-oss-20b
+    canonical_name: openai/gpt-oss-20b
+    source: https://docs.api.nvidia.com/nim/reference/llm-apis

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.app.api.admin import admin_router
 from backend.app.api.v1 import v1_router
 from backend.app.config import get_settings
-from backend.app.core.discovery.openrouter import OpenRouterDiscoveryService
+from backend.app.core.discovery.orchestrator import DiscoveryOrchestrator
 from backend.app.core.providers.registry import get_registry
 
 logger = logging.getLogger(__name__)
@@ -18,48 +18,20 @@ settings = get_settings()
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager for background services and resource pools."""
-    # Startup actions: warm up model cache immediately and launch periodic crawler
-    registry = get_registry()
-    discovery_service = OpenRouterDiscoveryService(registry=registry)
-
-    # Initial non-blocking startup discovery task
-    initial_discovery_task = asyncio.create_task(discovery_service.discover_free_models())
-
-    # Periodic discovery crawler task
+    registry = getattr(app.state, "provider_registry", None) or get_registry()
+    discovery = DiscoveryOrchestrator(registry)
+    app.state.discovery = discovery
     stop_event = asyncio.Event()
-
-    async def periodic_discovery_worker() -> None:
-        while not stop_event.is_set():
-            try:
-                # Wait for next interval or stop signal
-                try:
-                    await asyncio.wait_for(stop_event.wait(), timeout=float(settings.discovery_interval_seconds))
-                    break  # Stop requested
-                except asyncio.TimeoutError:
-                    pass  # Interval elapsed, proceed to discover
-
-                logger.info("Executing scheduled model discovery cycle...")
-                await discovery_service.discover_free_models()
-            except asyncio.CancelledError:
-                break
-            except Exception as exc:
-                logger.warning("Periodic model discovery encountered an error: %s", str(exc))
-
-    crawler_task = asyncio.create_task(periodic_discovery_worker())
-
-    yield
-
-    # Shutdown actions
-    stop_event.set()
-    initial_discovery_task.cancel()
-    crawler_task.cancel()
+    worker = asyncio.create_task(discovery.run(stop_event))
     try:
-        await asyncio.gather(initial_discovery_task, crawler_task, return_exceptions=True)
-    except Exception:
-        pass
+        yield
+    finally:
+        stop_event.set()
+        worker.cancel()
+        await asyncio.gather(worker, return_exceptions=True)
 
 
-def create_app() -> FastAPI:
+def create_app(provider_registry=None) -> FastAPI:
     """FastAPI application factory."""
     application = FastAPI(
         title=settings.app_name,
@@ -67,6 +39,9 @@ def create_app() -> FastAPI:
         description="Zero-cost LLM inference proxy and smart load balancer powered by free-tier models.",
         lifespan=lifespan,
     )
+
+    if provider_registry is not None:
+        application.state.provider_registry = provider_registry
 
     # Enable CORS for frontend clients
     application.add_middleware(

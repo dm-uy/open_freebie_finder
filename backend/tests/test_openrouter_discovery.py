@@ -11,20 +11,23 @@ MOCK_OPENROUTER_RESPONSE = {
             "id": "meta-llama/llama-3.3-70b-instruct:free",
             "name": "Meta: Llama 3.3 70B Instruct (free)",
             "context_length": 131072,
-            "pricing": {"prompt": "0", "completion": "0"},
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
+            "pricing": {"prompt": "0", "completion": "0", "request": "0"},
             "description": "Free high performance 70B model",
         },
         {
             "id": "google/gemini-2.0-flash-exp:free",
             "name": "Google: Gemini 2.0 Flash (free)",
             "context_length": 1048576,
-            "pricing": {"prompt": "0", "completion": "0"},
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
+            "pricing": {"prompt": "0", "completion": "0", "request": "0"},
             "description": "Free multimodal Gemini experimental",
         },
         {
             "id": "openai/gpt-4o",
             "name": "OpenAI: GPT-4o",
             "context_length": 128000,
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
             "pricing": {"prompt": "0.0000025", "completion": "0.00001"},
             "description": "Paid commercial model",
         },
@@ -32,6 +35,7 @@ MOCK_OPENROUTER_RESPONSE = {
             "id": "anthropic/claude-3.5-sonnet",
             "name": "Anthropic: Claude 3.5 Sonnet",
             "context_length": 200000,
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
             "pricing": {"prompt": "0.000003", "completion": "0.000015"},
             "description": "Paid commercial model",
         },
@@ -39,6 +43,7 @@ MOCK_OPENROUTER_RESPONSE = {
             "id": "partial-free/half-cost-model",
             "name": "Partial Free Model",
             "context_length": 8192,
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
             "pricing": {"prompt": "0", "completion": "0.000001"},  # Non-zero completion
             "description": "Must not be included",
         },
@@ -46,7 +51,8 @@ MOCK_OPENROUTER_RESPONSE = {
             "id": "unknown-context/model:free",
             "name": "Model with Missing Context",
             "context_length": None,  # Missing context length
-            "pricing": {"prompt": "0", "completion": "0"},
+            "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
+            "pricing": {"prompt": "0", "completion": "0", "request": "0"},
         },
     ]
 }
@@ -151,7 +157,8 @@ async def test_float_string_context_window():
         "data": [
             {
                 "id": "test/float-context:free",
-                "pricing": {"prompt": "0", "completion": "0"},
+                "architecture": {"input_modalities":["text"], "output_modalities":["text"]},
+            "pricing": {"prompt": "0", "completion": "0", "request": "0"},
                 "context_length": "65536.0",
             }
         ]

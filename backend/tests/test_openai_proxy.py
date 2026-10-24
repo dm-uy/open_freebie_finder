@@ -1,3 +1,4 @@
+from backend.tests.eligibility_fixtures import install_fixture_evidence
 """Tests for OpenAI-compatible Proxy Endpoints (/v1/models and /v1/chat/completions)."""
 import json
 import httpx
@@ -14,6 +15,7 @@ from backend.app.main import app
 def clean_registry():
     """Fixture ensuring a fresh registry with test models."""
     registry = get_registry()
+    install_fixture_evidence(registry)
     registry.load_manifests()
     return registry
 

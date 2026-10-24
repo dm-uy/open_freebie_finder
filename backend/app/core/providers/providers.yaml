@@ -4,6 +4,7 @@
 
 providers:
   - id: "openrouter"
+    eligibility_profile: "openrouter_zero_price"
     name: "OpenRouter"
     base_url: "https://openrouter.ai/api/v1"
     models_endpoint: "https://openrouter.ai/api/v1/models"
@@ -18,6 +19,7 @@ providers:
     description: "OpenRouter multi-model hub with dynamic zero-cost :free models filter."
 
   - id: "groq"
+    eligibility_profile: "groq_account_probe"
     name: "Groq Cloud"
     base_url: "https://api.groq.com/openai/v1"
     models_endpoint: "https://api.groq.com/openai/v1/models"
@@ -30,6 +32,7 @@ providers:
     description: "Ultra-fast inference LPUs with generous free tier (Llama 3.3 70B, Gemma 2, Llama 3.1 8B)."
 
   - id: "nvidia_nim"
+    eligibility_profile: "nvidia_account_probe"
     name: "NVIDIA NIM"
     base_url: "https://integrate.api.nvidia.com/v1"
     models_endpoint: "https://integrate.api.nvidia.com/v1/models"
@@ -39,7 +42,7 @@ providers:
     discovery:
       type: "all_available"
     is_enabled: true
-    description: "NVIDIA hosted open weights (Llama 3.3 70B, Nemotron 70B, Mistral Large)."
+    description: "Dynamic available Free Endpoint chat routes, intersected with the keyed API catalog and conditionally qualified under an asserted nonbillable account."
 
   - id: "google_gemini"
     name: "Google AI Studio (Gemini)"
@@ -62,7 +65,7 @@ providers:
       api_key_env: "GITHUB_PAT_TOKEN"
     discovery:
       type: "all_available"
-    is_enabled: true
+    is_enabled: false
     description: "Free Azure AI inference via GitHub Personal Access Token (GPT-4o-mini, Phi-4, Llama 3.3)."
 
   - id: "cerebras"
@@ -74,10 +77,11 @@ providers:
       api_key_env: "CEREBRAS_API_KEY"
     discovery:
       type: "all_available"
-    is_enabled: true
+    is_enabled: false
     description: "Ultra-high throughput ~2000 tokens/sec free tier on Llama 3.1 8B/70B."
 
   - id: "mistral"
+    eligibility_profile: "mistral_account_probe"
     name: "Mistral AI"
     base_url: "https://api.mistral.ai/v1"
     models_endpoint: "https://api.mistral.ai/v1/models"
@@ -90,9 +94,10 @@ providers:
     description: "Mistral experiment tier with access to Mistral Small and Codestral."
 
   - id: "huggingface"
+    eligibility_profile: "hf_account_probe"
     name: "Hugging Face Inference API"
-    base_url: "https://api-inference.huggingface.co/v1"
-    models_endpoint: "https://api-inference.huggingface.co/v1/models"
+    base_url: "https://router.huggingface.co/v1"
+    models_endpoint: "https://router.huggingface.co/v1/models"
     auth:
       type: "bearer"
       api_key_env: "HUGGINGFACE_API_KEY"
@@ -110,7 +115,7 @@ providers:
       api_key_env: "CLOUDFLARE_API_TOKEN"
     discovery:
       type: "all_available"
-    is_enabled: true
+    is_enabled: false
     description: "Edge serverless AI inference offering 10,000 free daily Neurons."
 
   - id: "local_ollama"

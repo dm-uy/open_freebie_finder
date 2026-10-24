@@ -1,3 +1,4 @@
+from backend.tests.eligibility_fixtures import install_fixture_evidence
 """Unit and integration tests for Structured Telemetry and Correlation ID Cascades (T-005)."""
 import json
 import logging
@@ -28,8 +29,11 @@ async def clean_telemetry_store():
 async def mock_registry():
     """Create isolated registry populated with two test models for cascade testing."""
     registry = ProviderRegistry()
+    install_fixture_evidence(registry)
     m1 = ProviderManifest(
         id="provider-alpha",
+        free_access_confirmed=True,
+        chat_model_allowlist=["model-primary"],
         name="Provider Alpha",
         base_url="https://api.alpha.com/v1",
         models_endpoint="https://api.alpha.com/v1/models",
@@ -38,6 +42,8 @@ async def mock_registry():
     )
     m2 = ProviderManifest(
         id="provider-beta",
+        free_access_confirmed=True,
+        chat_model_allowlist=["model-secondary"],
         name="Provider Beta",
         base_url="https://api.beta.com/v1",
         models_endpoint="https://api.beta.com/v1/models",

@@ -1,3 +1,4 @@
+from backend.tests.eligibility_fixtures import install_fixture_evidence
 """Tests for Declarative Provider Schema and Registry."""
 import pytest
 from pydantic import ValidationError
@@ -46,6 +47,7 @@ def test_manifest_schema_validation():
 def test_load_all_ten_builtin_manifests():
     """AC-2: Verify all 10 out-of-the-box manifests in providers.yaml load cleanly."""
     registry = ProviderRegistry()
+    install_fixture_evidence(registry)
     manifests = registry.get_manifests()
     assert len(manifests) == 10
 
@@ -79,6 +81,7 @@ def test_load_all_ten_builtin_manifests():
 async def test_in_memory_lookup_zero_network():
     """AC-6: Verify model lookups resolve strictly in-memory without network operations."""
     registry = ProviderRegistry()
+    install_fixture_evidence(registry)
     test_models = [
         DiscoveredModel(
             id="meta-llama/llama-3.3-70b-instruct:free",
@@ -106,6 +109,7 @@ async def test_in_memory_lookup_zero_network():
 async def test_model_candidates_lookup():
     """AC-9: Verify get_model_candidates returns all models matching canonical name."""
     registry = ProviderRegistry()
+    install_fixture_evidence(registry)
     test_models = [
         DiscoveredModel(
             id="meta-llama/llama-3.3-70b-instruct:free",
@@ -136,5 +140,7 @@ async def test_model_candidates_lookup():
 def test_registry_singleton():
     """Verify get_registry returns identical cached instance."""
     r1 = get_registry()
+    install_fixture_evidence(r1)
     r2 = get_registry()
+    install_fixture_evidence(r2)
     assert r1 is r2

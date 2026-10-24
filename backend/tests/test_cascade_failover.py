@@ -1,3 +1,4 @@
+from backend.tests.eligibility_fixtures import install_fixture_evidence
 """Unit and Integration Tests for Two-Tier Cascade Failover and Circuit Breaker."""
 import httpx
 import pytest
@@ -15,13 +16,14 @@ from backend.app.core.providers.registry import ProviderRegistry
 def test_registry():
     """Create test registry with sample manifests and models."""
     registry = ProviderRegistry()
+    install_fixture_evidence(registry)
     registry.load_manifests()
     return registry
 
 
 @pytest.mark.asyncio
 async def test_tier1_same_model_failover(test_registry):
-    """AC-7: Verify that when Candidate 1 returns 429, router transparently falls over to Candidate 2."""
+    """AC-7: Verify that when Candidate 1 returns 503, router transparently falls over to Candidate 2."""
     # Register same canonical model under two different active providers (local_ollama and groq)
     # Give groq a dummy key for testing
     groq_manifest = test_registry.get_manifest("groq")
@@ -53,8 +55,8 @@ async def test_tier1_same_model_failover(test_registry):
         body = request.read().decode("utf-8")
         if "llama-3.3-70b-primary" in body:
             call_counts["primary"] += 1
-            # Primary candidate hits rate limit!
-            return httpx.Response(429, json={"error": {"message": "Rate limit reached"}})
+            # Primary candidate hits service failure!
+            return httpx.Response(503, json={"error": {"message": "Service failure reached"}})
         elif "llama-3.3-70b-secondary" in body:
             call_counts["secondary"] += 1
             return httpx.Response(200, json={
@@ -129,7 +131,7 @@ async def test_circuit_breaker_cooldown(test_registry):
 
 @pytest.mark.asyncio
 async def test_streaming_first_token_failover(test_registry):
-    """AC-8: Verify that early 429/error on stream pre-buffer triggers cascade to secondary candidate."""
+    """AC-8: Verify that early 503/error on stream pre-buffer triggers cascade to secondary candidate."""
     test_models = [
         DiscoveredModel(
             id="stream-model-1",
@@ -154,8 +156,8 @@ async def test_streaming_first_token_failover(test_registry):
         body = request.read().decode("utf-8")
         if "stream-model-1" in body:
             call_counts["c1"] += 1
-            # Candidate 1 fails on stream initiation with 429
-            return httpx.Response(429, json={"error": "Rate limited"})
+            # Candidate 1 fails on stream initiation with 503
+            return httpx.Response(503, json={"error": "Service failureed"})
         elif "stream-model-2" in body:
             call_counts["c2"] += 1
             sse = (
@@ -254,7 +256,7 @@ async def test_tier2_fallback_when_tier1_exhausted(test_registry):
         body = request.read().decode("utf-8")
         if "primary-tier1-id" in body:
             call_log.append("tier1")
-            return httpx.Response(429, json={"error": "Rate limit exceeded on Tier 1"})
+            return httpx.Response(503, json={"error": "Service failure exceeded on Tier 1"})
         elif "backup-tier2-id" in body:
             call_log.append("tier2")
             return httpx.Response(200, json={
@@ -285,7 +287,7 @@ async def test_tier2_fallback_when_tier1_exhausted(test_registry):
 
 @pytest.mark.asyncio
 async def test_streaming_role_first_failover(test_registry):
-    """Verify that an in-stream 429 occurring after a role-only chunk triggers failover to Candidate 2."""
+    """Verify that an in-stream 503 occurring after a role-only chunk triggers failover to Candidate 2."""
     test_models = [
         DiscoveredModel(
             id="role-first-failing",
@@ -310,10 +312,10 @@ async def test_streaming_role_first_failover(test_registry):
         body = request.read().decode("utf-8")
         if "role-first-failing" in body:
             call_counts["c1"] += 1
-            # Emits role chunk first, then immediately emits an in-stream 429 error!
+            # Emits role chunk first, then immediately emits an in-stream 503 error!
             sse_failing = (
                 b'data: {"id":"c1","choices":[{"delta":{"role":"assistant"}}],"model":"role-first-failing"}\n\n'
-                b'data: {"error":{"message":"Rate limit exceeded","code":429}}\n\n'
+                b'data: {"error":{"message":"Service failure exceeded","code":503}}\n\n'
             )
             return httpx.Response(200, content=sse_failing, headers={"Content-Type": "text/event-stream"})
         elif "role-second-working" in body:

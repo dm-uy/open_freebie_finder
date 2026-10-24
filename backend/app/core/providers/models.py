@@ -27,6 +27,8 @@ class DiscoveryRule(BaseModel):
         default="all_available",
         description="Discovery strategy for detecting free models.",
     )
+    catalog_format: str = "openai"
+    pagination: Literal["none"] = "none"
     filter_expression: Optional[str] = Field(
         default=None,
         description="Optional filter expression (e.g. regex pattern matching model.id).",
@@ -80,6 +82,16 @@ class ProviderManifest(BaseModel):
         default=None,
         description="Optional description of the provider tier, limits, and quotas.",
     )
+    eligibility_profile: Literal["unsupported", "openrouter_zero_price", "groq_account_probe", "nvidia_account_probe", "mistral_account_probe", "hf_account_probe"] = "unsupported"
+    free_access_confirmed: bool = Field(default=False, strict=True)
+    chat_model_allowlist: list[str] = Field(default_factory=list)
+
+    @field_validator("chat_model_allowlist")
+    @classmethod
+    def validate_allowlist(cls, values: list[str]) -> list[str]:
+        if any(not value.strip() or len(value) > 512 for value in values):
+            raise ValueError("Invalid chat model allowlist.")
+        return list(dict.fromkeys(values))
 
     @field_validator("id")
     @classmethod
@@ -120,7 +132,7 @@ class DiscoveredModel(BaseModel):
         description="Maximum supported context window size in tokens.",
     )
     is_free: bool = Field(
-        default=True,
+        default=False,
         description="Flag denoting zero-cost status.",
     )
     metadata: dict[str, Any] = Field(
