@@ -1,5 +1,9 @@
 # Project State Handoff (HANDOFF)
 
+## Publication secret check (2026-10-24)
+
+[Audit scope and evidence](notes/publication-secret-audit.md): Gitleaks plus exact local-credential comparison found no real secret in tracked files/reachable history at a4acada. One scanner finding in ordinary test-table prose was independently confirmed false; commit metadata also scanned. .env remains ignored/untracked. Unreachable/reflog/private backup contents are outside this assurance; never publish the private recovery bundle or a workspace/.git archive. The owner authorized local commits; this audit grants no publication authority. Audit records are saved as a local documentation checkpoint; no runtime or service change.
+
 ## Local Git checkpoint (2026-10-24)
 
 The owner explicitly authorized committing all accumulated project changes locally. Code/tests/tools and the example environment are now committed as `d160000` (`feat: checkpoint provider eligibility, resilience and task APIs`); the accompanying documentation checkpoint includes all pending records and the English public PROJECT-PROCESS.md. Earlier statements below about uncommitted work or missing commit authority describe historical checkpoints, not the current disposition. No push, remote configuration, primary restart or inference is authorized/performed by this Git operation.
