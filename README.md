@@ -371,3 +371,7 @@ Some tests use temporary loopback TCP servers and require permission to bind loc
 | [AGENTS.md](AGENTS.md) | Contributor/agent operating instructions |
 
 P2 onboarding and outstanding provider/provenance obligations remain open. P3 ranking, P4 dashboard and P5 packaging/cache work are planned; this README does not imply they are shipped. Changes to code or provider behavior follow the approved task/specification process. Never include real provider credentials in commits, issues or shared diagnostics.
+
+## Author
+
+Connect with the author on [LinkedIn](https://www.linkedin.com/in/valitov-danis-ildusovich/).

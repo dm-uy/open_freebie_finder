@@ -1,5 +1,9 @@
 # Project State Handoff (HANDOFF)
 
+## Author contact (2026-10-24)
+
+Owner requested adding their LinkedIn link. README now includes an Author section linking to https://www.linkedin.com/in/valitov-danis-ildusovich/ (owner-provided URL with the self-profile UI query removed). Documentation only; no runtime/test change. Published through the authorized GitHub main workflow; exact link checked against owner input and whitespace verified.
+
 ## Public GitHub repository (2026-10-24)
 
 The owner explicitly authorized creating a public repository under dm-uy and pushing this project. Created https://github.com/dm-uy/open_freebie_finder, origin configured, main tracks origin/main. Initial branch publication of `3a86217d89f6773462be334ca406d5bc33845b8f` was verified through GitHub API: visibility public, owner dm-uy, default branch main, matching commit, README present and license MIT. This documentation checkpoint records that publication and is included in the same authorized main publication. Only main is pushed; auxiliary Codex refs, ignored .env and private recovery bundles are excluded. Earlier pending-publication statements below are historical. No backend hosting deployment, process restart or provider inference occurred. T-010 v1.1.0/A1–A3 remains approval-pending; its admission/primary gates are unchanged.
