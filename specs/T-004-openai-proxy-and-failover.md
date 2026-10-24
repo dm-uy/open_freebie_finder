@@ -9,7 +9,7 @@
 - **Task:** `TASKS.md` -> T-004 "OpenAI Proxy Endpoints and Cascade Failover Router"
 - **Input RECON:** Embedded section below (Commit: `2ee5666`, Date: 2026-10-22)
 - **Implementation Status:** VERIFIED / 24 TESTS PASSED / ALL PROBES CONFIRMED
-- **Governance:** [PROJECT-PROCESS.md](PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
+- **Governance:** [PROJECT-PROCESS.md](../PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
 
 $START_DOCUMENT
 PURPOSE: Expose standard OpenAI endpoints (/v1/chat/completions and /v1/models) enabling external developer tools and harnesses (DeepSeek Harness, Cursor, LangChain) to execute zero-cost inference with transparent two-tier cascade failover upon rate limits (429/5xx).

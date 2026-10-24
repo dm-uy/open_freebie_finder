@@ -9,7 +9,7 @@
 - **Task:** `TASKS.md` -> T-003 "Declarative Provider Registry and Dynamic Discovery Engine"
 - **Input RECON:** Embedded section below (Commit: `99bd025`, Date: 2026-10-22)
 - **Implementation Status:** VERIFIED / 10 TESTS PASSED / ALL PROBES CONFIRMED (10 manifests loaded, 20 live models discovered)
-- **Governance:** [PROJECT-PROCESS.md](PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
+- **Governance:** [PROJECT-PROCESS.md](../PROJECT-PROCESS.md), [AGENTS.md](AGENTS.md)
 
 $START_DOCUMENT
 PURPOSE: Provide a declarative, schema-driven provider registry with 10 built-in manifests covering 90%+ free LLM services, and a dynamic discovery worker for OpenRouter zero-cost models.

@@ -1,36 +1,81 @@
 # Project State Handoff (HANDOFF)
 
-## Blocked on the owner
-Owner review of Debug-fixed T-005 implementation (BUG_REPORT findings resolved).
+## Local Git checkpoint (2026-10-24)
 
-## State
-* **Active Phase:** P2 (Adaptive Circuit Breaker, Cross-Provider Cascade, Structured Telemetry, and Validation API) — active.
-* **Active Work Package:** B-002 (B-001 archived in `notes/batch-B-001.md`).
-* **Active Task:** `T-005` (Structured Request Telemetry and Correlation ID Cascades) — Debug-fixed, in `review`.
-* **Completed Work:**
-  * Configured `max_telemetry_records: int = 500` in `backend/app/config.py`.
-  * Built thread-safe bounded in-memory circular buffer `TelemetryStore` in `backend/app/core/telemetry/`.
-  * Implemented structured JSON hop logging (`backend.app.telemetry`) and trace recording across multi-candidate failovers in `CascadeRouter`.
-  * Implemented client correlation ID ingestion (`X-Request-ID`) and response reflection across all HTTP responses (200/SSE/400/401/404/500/503) in `backend/app/api/v1/chat.py`.
-  * Implemented admin telemetry endpoints with master-key protection in `backend/app/api/admin/telemetry.py`.
-  * **Debug fixes (BUG_REPORT):**
-    * Added `_record_trace_safely()` wrapper around all 5 `record_trace` call sites in `router.py` (AC-9).
-    * Rewrote `test_telemetry_fail_safe_execution` to use real router + mocked upstream + failing store (no longer vacuous).
-    * Added `_sanitize_error()` to strip raw upstream response bodies from telemetry traces and hop logs (privacy, Never Do).
-    * Removed dead `get_all_models()` alias from `registry.py` (out-of-scope, corrected spec reference).
-* **Actual Environment State:**
-  * Git: `main` branch, uncommitted changes (pending review).
-  * Local Git user: `dm-uy`.
-  * Open-source license: MIT.
+The owner explicitly authorized committing all accumulated project changes locally. Code/tests/tools and the example environment are now committed as `d160000` (`feat: checkpoint provider eligibility, resilience and task APIs`); the accompanying documentation checkpoint includes all pending records and the English public PROJECT-PROCESS.md. Earlier statements below about uncommitted work or missing commit authority describe historical checkpoints, not the current disposition. No push, remote configuration, primary restart or inference is authorized/performed by this Git operation.
 
-## Queue
-* **Active Batch:** B-002 (Phase P2: T-005 in review, T-006 Provider Validation API, T-007 Multi-provider live activation, T-008 Provider Onboarding Agent).
-* **Next Permitted Step:** Owner acceptance of T-005 debug fixes; then author specification for `T-006`.
-* **Deferred Scope:** P3 (Benchmarks & quality pools), P4 (React UI), P5 (Docker & releases).
+Fresh precommit regression: `.venv/bin/python -m pytest backend/tests -q`,658 passed/36.72s with loopback socket permission; output `/tmp/off-precommit-pytest.txt`. Initial restricted run failed37 socket-related tests (621 passed) because socket.bind was denied; the permitted rerun passed unchanged source. Independent staging verification confirmed69 code files, clean whitespace and all81 accepted runtime hashes matching disk/index. Pattern scan and in-memory comparison against current private credential values found no candidate matches; `.env`, caches and runtime outputs are excluded. No credential values were printed or added.
 
-## Traps
-* **Dynamic Model Availability:** OpenRouter frequently introduces and deprecates free models (suffix `:free`). Hardcoding model identifiers will lead to silent breakages; the dynamic discovery engine is mandatory.
-* **Streaming Failover Timing:** During Server-Sent Events (`stream: true`), an upstream 429 error may occur either on initial HTTP handshake (prior to headers/body) or during the first chunk. The proxy must pre-buffer the initial upstream response before sending SSE byte chunks to the downstream client to allow transparent retries.
-* **Credential Hygiene:** Never commit or hardcode upstream API keys in repository files; all provider authentication must use `.env` or local runtime configuration.
-* **Correlation ID Propagation:** For multi-candidate failover hops, the incoming client `X-Request-ID` (or generated UUID) must be propagated through all candidate attempts so operators can trace the complete cascade trajectory in logs and admin telemetry.
-* **Telemetry Fail-Safety:** `_record_trace_safely` in `CascadeRouter` is the sole enforcement of BR-4/AC-9. Future telemetry write points must use this wrapper, never bare `await store.record_trace()`.
+T-010 v1.0.0 remains accepted partial; v1.1.0/A1–A3 implementation and its proposed live packet still await exact approval. Saving the proposed spec in Git does not grant implementation/activation authority. Primary remains the earlier T-009 process.
+
+## Current T-010: accepted partial result; v1.1.0 amendment ready for approval
+
+The owner approved T-010 v1.0.0/N1–N4 on2026-10-23. Source implementation, local/socket tests, independent cumulative review and finite isolated source packet are complete under the agreed limits. [Results/AC matrix](notes/T-010-results.md), [approved specification](specs/T-010-task-specific-inference.md). Final full658 tests/36.82s; independent44/0.64s after privacy/epoch repairs, with final conservative additions reviewed separately. All existing24 test files/protected contracts unchanged; exact candidate/audit below.
+
+Four actual source packets and final data-only preflights returned UNVERIFIED with actual/consumed inference0. Embeddings/decisions: price_scope_unknown; rerank/speech: unsupported_enforcement. Default chat catalog remains unchanged; explicit task catalogs/APIs exist in source. No task monetary mapping/conditional-account inheritance or admission override. Full AC-18/T-010/P2 stays OPEN; this is not positive external free delivery.
+
+The owner accepted the partial implementation on2026-10-23 and authorized read-only remaining-admission reconnaissance and a T-010 amendment for all four tasks. [v1.1.0 amendment](specs/T-010-free-variant-admission.md) and [admission RECON](docs/recon/T-010-admission-amendment.md) are prepared for exact approval. Proposed A1–A3 use published exact free variants, typed pricing and optional speech voice/default pcm, with maximum2 sends/task8 total isolated. Independent proposal/source/cumulative review clarified replacement admission, absent per-model format mapping and voice source tension. No unapproved admission/runtime change or new generation is authorized. Primary activation remains separate. No inference/restart/publication is queued. T-008 follows after the chosen T-010 disposition; existing T-007/P2 and phase dependencies remain.
+
+Primary read-only health/OpenAPI both200; none of the T-010 task POST routes is loaded. No primary configuration/service change. Earlier accepted runtime/integration records below remain historical primary evidence; the T-010 source working tree differs and is still uncommitted. Private reports/ledger and byte identity are recorded in results. No Git commit/push/history change in this task.
+
+## Current accepted checkpoint
+
+T-009 is **owner-accepted and integrated into the primary**. The owner explicitly authorized restart and primary buffered/SSE32-token checks after accepting R1–R3. Both actual target checks PASS. No owner decision remains for this completed integration; no additional inference packet is queued. [Dated integration evidence](notes/T-009-results.md) supersedes historical candidate/pending-primary sections there.
+
+P2 / B-002 remains active; T-009 is done. T-005/T-006 and the T-007 operational subset remain accepted. T-007/P2 are not fully closed: HF positive delivery/prior402, Gemini live/profile deferral, gateways and positive local/cloud provenance, T-008 onboarding and phase exit obligations remain. Cloudflare/Cerebras/GitHub are unconditional skips. P3 retains P2 dependency. T-010 task-specific APIs/catalogs is now the owner-selected nearest task, before T-008. T-010 v1.0.0/N1–N4 implementation is now explicitly approved; primary activation and publication remain separate.
+
+## Running primary and target proof
+
+Ordinary uvicorn PID33541 at127.0.0.1:8001, project cwd, `.venv/bin/python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8001 --log-level warning --no-access-log`. Old PID3119 command/cwd/listener verified before graceful SIGTERM. New listener, HTTP health and real target API checks pass. PID `/tmp/open-freebie-finder-main.pid`; log `/tmp/open-freebie-finder-main.log`. Port8000 is unrelated oMLX and was untouched. Recheck actual PID/cwd/listener before future lifecycle actions.
+
+The checker selected a currently eligible Groq-only route from the actual primary `/v1/models`, without manual model-ID admission. One buffered and one SSE request at max_tokens32: both HTTP200, valid visible answer, actual completion_tokens10 each, one successful Groq telemetry attempt each; SSE one DONE. Correlation IDs matched actual primary admin telemetry. Monetary reporting unavailable, assurance user_asserted; do not call it observed zero. The earlier isolated strict-OpenRouter packet separately observed zero cost. No answer/key/raw error retained. Checker exited; primary and normal bounded worker remain running. Two consumer attempts are not a total inference count including background qualification.
+
+No key, `.env`, provider manifest, free policy or account-side billing change. Local FREE_ACCOUNT_CONFIRMATIONS=["groq","nvidia_nim","mistral"] was preserved and explicitly loaded into the restarted process; shipped default/example[], HF unconfirmed. No new opt-in or breaker bypass. Cooldown base60/max attempts3 preserved. Every new health recovery remains subordinate to source/assertion/credential binding, expiring both-mode leases, BillingGuard and started-SSE no replay. All controller/qualification/financial state is process-local and is recreated on restart as previously specified.
+
+## Verification and recoverable identity
+
+The earlier T-009 primary integration matched `/tmp/t009-final-runtime.json`:62 files, with dated hashes/captures in [results](notes/T-009-results.md). Its pre-history-rewrite HEAD wasmain `6d49e2a174a111dc0a5bb8745530a97d0e9786da`; current reachable HEAD is78a1aa4790293781aafe81e786ee4e3b7f098ef2. The current T-010 working-tree candidate differs from those historical bytes and has its own81-file manifest in T-010 results; do not call the current source the old primary build. Source stayed unchanged during that earlier integration; its retained proof is historical. Retained root493 passed/16.80s and independent focused81/4.32s after QA repairs. The independent full rerun had an earlier permission rejection; do not label493 an independently executed full pass. Protected seven T-006 files and main.py remain unchanged.
+
+This integration changes only affected Markdown and starts the explicitly authorized primary process. Starting git status `/tmp/t009-integration-start-status.txt`. Restart/check captures `/tmp/t009-primary-restart.json`, `/tmp/t009-primary-checks.json`, `/tmp/t009-primary-checks.jsonl`; temporary checker `/tmp/t009_primary_checks.py`. Persistent safe summaries are in results. No commit/push or external deployment.
+
+## Traps and continuation
+
+Use PROJECT-PROCESS.md lightweight workflow; preserve dirty-tree work and existing approvals. Do not confuse source/profile epoch with auth identity or let recovery clear financial/account gates. Preserve actual HTTP status when diagnostic bodies fail; classify synthetic protocol502 separately. SSE finish_reason is not final health publication; inspect final cost and close I/O first. No automatic auth/balance recovery, no key rebinding, no eviction of live protection. CLI/controller snapshots are process-local, not another backend's state.
+
+Project memory was synchronized after the owner requested the remaining route. [Current next-step memory](notes/next-steps-current-checkpoint.md) now supersedes its pre-T-009 preparation text; historical architecture stages are labeled. That earlier recommendation was T-008 recon/specification, then P2 outstanding dispositions/exit audit, P3/P4 and P5; the latest owner selection above inserts T-010 before T-008. No new implementation/live packet is authorized. Independent read-only verification confirmed all62 accepted runtime hashes unchanged,34 local links/markers and roadmap dependencies. Corrected the old roadmap claim of delivered SQLite telemetry: current telemetry is bounded in memory, storage remains planned. No new tests, secret-file access or lifecycle action in this documentation pass. The latest owner-selected preparation is T-010, as recorded above.
+
+## Exploratory public-release question
+
+The owner asked whether the current project could be used as open source without a dashboard. Read-only assessment: the accepted backend is usable through local OpenAI-compatible text Chat Completions/model-list APIs, environment configuration and terminal/API clients. Dashboard, onboarding, quality aliases and Docker/persistent operational storage are still planned; README currently overstates several of these and lacks a clean quickstart. LICENSE is MIT. A public backend-preview release would require an explicitly scoped preparation/publication decision; this question authorizes neither publication nor a new implementation batch. No installation, inference, secret-file access or service change was performed for this assessment.
+
+## README user guide completed
+
+The owner then explicitly requested a complete README explaining the product, usage and configuration. README was rewritten in English under project rules: backend-preview scope, new-checkout quickstart, separate upstream/proxy credentials, local startup/readiness, buffered/SSE examples, client settings, provider matrix, strict versus conditional free assurance, background budgets, recovery, configuration, read-only telemetry, troubleshooting and optional real-inference diagnostics. Unsupported dashboard/Docker/storage/quality-alias claims were removed. Tools support is distinguished from structured-output shape validation without a capability guarantee.
+
+Verification:10 shell example blocks passed offline `bash -n`; independent read-only source review confirmed commands/defaults/auth/provider/recovery semantics,16 local links and11 TOC anchors. All62 accepted runtime hashes remain unchanged; whitespace checks pass. No install, runtime test, provider request, secret-file access, config/source change, restart, commit/push or publication occurred. Earlier exploratory-release README gaps above are now resolved as documentation; public release preparation/publication remains unapproved.
+
+## Current Harness compatibility follow-up
+
+The owner encountered400 unsupported_free_request for every model when connecting DeepSeek Harness. Diagnosed the client's default `store:false`; the closed backend intentionally rejects it before inference. Fixed only the existing Harness `open-freebie-finder` provider's compat/cache settings, with a private backup and approved filesystem escalation; keys/other providers unchanged. [Exact change and offline evidence](notes/harness-client-compatibility.md). README now includes the Harness recipe. All62 accepted backend/runtime hashes unchanged; no backend/source/free-policy edit, primary restart or provider inference. Offline actual linked-builder payload passed after profile correction; the owner subsequently confirmed Harness works. This is user-observed integration, not a new instrumented generation capture or certification of every agent/tool workflow.
+
+## History cleanup before the revised publication decision
+
+The owner reported Harness now works, then initially requested ignoring PROJECT-PROCESS.md and removing it from Git history before any commit/push. At that intermediate step, the file was byte-identical locally, ignored/untracked and absent from rewritten reachable commit trees and Codex snapshot tree refs. Public Markdown links were temporarily removed or marked local-only. The subsequent English-publication decision below supersedes those ignore/link choices; the local-only state is not current.
+
+Local history identity changed from main6d49e2a174a111dc0a5bb8745530a97d0e9786da to main78a1aa4790293781aafe81e786ee4e3b7f098ef2; earlier IDs in dated evidence identify pre-rewrite history, not lost implementation. All17 reachable commits were retained with only the private path removed; three refs were rewritten, including two Codex tree refs. Original history recovery bundle/index/worktree hash inventory is private outside the repo at `/private/tmp/off-private-history-backup-sn303_lp` (directory0700, bundle0600). It intentionally contains old private history and must not be published. Preparatory isolated attempts stopped before source mutation when snapshot tree refs needed separate handling.
+
+All pre-existing working-file contents were preserved at the rewrite boundary except the intended .gitignore addition; accepted62 runtime hashes remain unchanged. No runtime/config/key/service/inference change. Existing dirty tree remains uncommitted; remote is not configured, no working-tree commit or push was performed. Starting status `/tmp/pre-process-history-status.txt`; cleanup summary `/tmp/off-history-cleanup-result.json`. Independent verification confirmed every rewritten commit/tree preserved other paths/modes/blob IDs, local file bytes and accepted62 runtime hashes. Next owner decision is the release/commit/push scope and destination; do not infer publication from the question about readiness.
+
+## Current decision: publish the process in English
+
+The owner superseded the ignore/local-only plan: translate PROJECT-PROCESS.md into English and include it in the repository. The full self-contained lightweight instruction was translated, preserving its seven sections, templates, BR/AC/document markers, authorization boundaries and verification duties. The ignore rule was removed, public links restored, README process entry restored, and AGENTS now explicitly requires reading the file at each new/restored session. SPEC-EXAMPLE.md retains its existing Russian teaching-template exception.
+
+The already completed history rewrite is retained: old Russian versions remain absent from reachable history; the English document is a new unignored file ready for the next authorized commit. It has not been committed or pushed. Currentmain78a1aa4790293781aafe81e786ee4e3b7f098ef2; dated oldHEAD references remain historical. The owner did not ask to restore old Russian history. No backend/source/config/key/service/inference change. Independent read-only review confirmed semantic fidelity, all seven sections/templates/markers, restored links, unignored status and unchanged62 runtime hashes; whitespace checks pass. Translation is complete and ready for the next authorized commit. Await the exact commit/push destination/scope; do not silently publish.
+
+## Non-chat capability discussion (2026-10-23)
+
+The owner raised OpenRouter embeddings, rerank, decisions and speech catalog categories. Read-only code inspection confirmed that the current public v1 router mounts chat and models only; OpenRouter eligibility requires text-only output and excludes other output modalities. Official OpenRouter documentation confirms distinct embeddings, rerank, speech and alpha Decisions endpoints. This is a proposed scope extension, not implemented support or an approved implementation packet. A future specification should separate task catalogs/chat selection, endpoint-specific free eligibility and compatible failover; embedding vector spaces must remain consistent with the consuming index. Filtered website URLs alone do not establish current free inventory or admission evidence. No provider inference, runtime/configuration changes or restart occurred. Existing accepted scope and free-access gates remain effective.
+
+## Latest admission-spec verification (2026-10-23)
+
+[RECON](docs/recon/T-010-admission-amendment.md) owns source observations and independent review. Final checks:81 runtime hashes unchanged;94 local links and paired markers valid; git diff --check clean. Documentation-only preparation, no new pytest or live inference; retained658-test result belongs to the accepted partial implementation. Current owner decision is exact [T-010 v1.1.0/A1–A3](specs/T-010-free-variant-admission.md) including the proposed finite isolated packet. Existing v1.0.0 gates remain effective; primary has no T-010 activation.

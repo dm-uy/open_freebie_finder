@@ -12,10 +12,14 @@
 ---
 
 ### P2 — Provider Validation API, Circuit Breaker, Structured Telemetry, and Onboarding Agent
-* **Deliverable:** Live activation across all bundled providers, adaptive Circuit Breaker with exponential cool-off intervals, structured logging with correlation IDs linking failover hops across candidates, validation endpoint (`POST /api/admin/providers/validate`), and the prototype for the automated Provider Onboarding Agent (`POST /api/admin/providers/auto-discover`).
+* **Deliverable:** Live activation across viable supported bundled providers (retired services are excluded and per-provider live prerequisites must be satisfied), adaptive Circuit Breaker with exponential cool-off intervals, structured logging with correlation IDs linking failover hops across candidates, validation endpoint (`POST /api/admin/providers/validate`), and the prototype for the automated Provider Onboarding Agent (`POST /api/admin/providers/auto-discover`).
 * **Done When:** Requests can cascade across heterogeneous providers (e.g., OpenRouter -> Groq -> Google Gemini) upon quota exhaustion, and a new custom provider can be validated via API or analyzed automatically by the onboarding agent.
 * **Depends On:** P1
 * **Status:** `active` ← **Current Focus**
+* **Accepted checkpoint (2026-10-23):** T-005/T-006 accepted. T-007 operational baseline is accepted and integrated: strict OpenRouter plus explicitly confirmed Groq/NVIDIA/Mistral on the local primary at127.0.0.1:8001. Six final actual primary buffered/SSE checks PASS at32-token caps; independent412 tests/12.67s. NVIDIA Free Endpoint discovery and probe-queue fairness repairs are included. [Primary evidence](notes/T-007-primary-activation.md); detailed historical proofs/limits remain in [results](notes/T-007-results.md).
+* **Nearest owner-selected addition:** T-010 — task-specific catalogs and APIs for embeddings, rerank, decisions and speech, with dynamic free eligibility; see [TASKS](TASKS.md). Owner approved v1.0.0/N1–N4; source implementation and local verification are complete, with strict live admission gaps retained. Full T-010/AC-18 is open; primary activation is separate. This addition does not close existing P2 obligations.
+* **Preserved gaps:** T-007 is not fully closed: HF positive delivery, Gemini live/profile work, gateways and positive local/cloud provenance remain unresolved/deferred as recorded in TASKS. Cloudflare/Cerebras/GitHub remain unconditional skips. T-009 is owner-accepted and primary-integrated with buffered/SSE target proof; onboarding T-008 is not implemented. Conditional account trust is not provider-certified zero cost.
+* **Current T-009 checkpoint (2026-10-23):** Owner approved [v1.0.0](specs/T-009-adaptive-circuit-breaker.md) and R1–R3. [Verified result](notes/T-009-results.md):493 full tests, independent81 focused tests after repairs, actual strict-OpenRouter buffered/SSE PASS within2 capped sends. Owner subsequently accepted the result and authorized primary integration: PID33541 at8001, actual buffered/SSE PASS through Groq, one attempt each at32-token caps. No full P2 closure. The owner now prioritizes T-010 task-specific APIs before T-008; P3's P2 dependency is unchanged.
 
 ---
 
@@ -43,7 +47,19 @@
 
 ---
 
+### Remaining route after accepted T-009
+
+1. Review the owner-approved T-010 v1.0.0/N1–N4 implemented candidate. Preserve unknown gates; full positive free delivery/AC-18 remains open. The owner accepted the partial result; [v1.1.0 amendment](specs/T-010-free-variant-admission.md) and sourced admission recon are ready for approval. A1–A3/finite packet are proposed; current admission remains unchanged. Unlocking sourced profiles and primary activation remain separate decisions. See [results](notes/T-010-results.md).
+2. Prepare T-008 onboarding recon/specification after T-010; its existing scope remains open.
+3. Resolve or explicitly agree remaining T-007 dispositions and verify P2 exit criteria; current working pool/T-009 acceptance does not close them.
+4. Deliver P3 ranking/pools/context/reasoning work after P2; P4 dashboard may proceed in parallel under its existing P1 dependency.
+5. Deliver P5 packaging/cache/client documentation after P3 and P4.
+
+[Current planning memory and provider return conditions](notes/next-steps-current-checkpoint.md). No new batch, live packet or phase-scope waiver is approved by this sequence.
+
+---
+
 ### Deferred — OpenTelemetry Exporters
 * **Item:** Full OpenTelemetry instrumentation (tracing spans, metrics exporters, collector integration).
-* **Reason:** The proxy is a local single-user zero-setup tool; SQLite telemetry plus structured logging cover the actual consumers of metrics. OTel adds heavy dependencies contradicting the zero-setup core value.
+* **Reason:** The proxy is a local single-user zero-setup tool; Bounded in-memory telemetry plus structured logging cover the current consumers of metrics; SQLite-backed operational storage remains planned. OTel adds heavy dependencies contradicting the zero-setup core value.
 * **Return When:** Server-side deployment for a team / multiple proxy instances requiring aggregated monitoring; requires a separate DEC and stack approval.

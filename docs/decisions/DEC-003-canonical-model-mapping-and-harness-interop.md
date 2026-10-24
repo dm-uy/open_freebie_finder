@@ -48,3 +48,8 @@ When a harness requests a model (e.g., `meta-llama/llama-3.3-70b-instruct`):
 * Seamless plug-and-play compatibility with DeepSeek Harness, Cursor, and any OpenAI client.
 * Zero leakage of upstream provider complexity into the consumer tools.
 * Maximized utilization of all free tier quotas before degrading to alternative models.
+
+
+## T-010 approved task extension (2026-10-23)
+
+Owner approval of [T-010 v1.0.0/N1–N4](../../specs/T-010-task-specific-inference.md) extends the source backend with separate task catalogs/protocols and exact OpenRouter task routes. Declarative logical provider identity is retained; task parsing/zero-price controls are owned protocol policy, never arbitrary YAML expressions or client routing overrides. Chat's default listing, alternative-model fallback and response masking do not authorize embedding/rerank/decisions/speech substitution. Task service health is distinct; credential quota/auth and the financial account umbrella protect related chat/task routes together within the retained registry. Independent registries remain isolated. Rerank/speech and incomplete task pricing remain unknown, with no inherited chat omitted-fee exception or account qualification. This approval authorizes implementation, not acceptance of missing external proof or primary activation. [Result evidence and limits](../../notes/T-010-results.md).

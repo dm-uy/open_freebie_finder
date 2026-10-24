@@ -1,16 +1,19 @@
 # Project Operations: Open Freebie Finder
 
 ## Goal and Project Profile
-Open Freebie Finder is a local/server-side smart proxy and load balancer for zero-cost LLM inference powered by free-tier models across multiple providers (OpenRouter, Groq, Google AI Studio, Nvidia NIM, etc.). It exposes an OpenAI-compatible API (`/v1/chat/completions`, `/v1/models`), transparent cascade failover upon 429/5xx errors, auto-discovery of active free models, benchmark-based model ranking, and an intuitive React web dashboard.
+Open Freebie Finder is a local/server-side smart proxy and load balancer for zero-cost LLM inference powered by free-tier models across multiple providers (OpenRouter, Groq, Google AI Studio, Nvidia NIM, etc.). The implemented backend exposes an OpenAI-compatible text-chat subset (`/v1/chat/completions`, `/v1/models`), dynamic eligible-model discovery, bounded cascade failover, telemetry and adaptive recovery. Task-specific embeddings/rerank/decisions/speech support, benchmark ranking and the React dashboard are planned; follow TASKS/ROADMAP for actual authorization and status.
 
 ## Session Startup Reading Order
 1. `AGENTS.md` (this file)
-2. `VISION.md` (goals, scope boundaries, success criteria)
-3. `ROADMAP.md` (phases, current milestone focus)
-4. `HANDOFF.md` (current state, blockers, next steps)
-5. `TASKS.md` (active work package)
-6. `ARCHITECTURE.md` (system design, data flow diagrams)
-7. `docs/decisions/` (formal architectural decisions)
+2. `PROJECT-PROCESS.md` (self-contained lightweight project/documentation process)
+3. `VISION.md` (goals, scope boundaries, success criteria)
+4. `ROADMAP.md` (phases, current milestone focus)
+5. `HANDOFF.md` (current state, blockers, next steps)
+6. `TASKS.md` (active work package)
+7. `ARCHITECTURE.md` (system design, data flow diagrams)
+8. Relevant `docs/decisions/`, specifications and notes.
+
+Read `PROJECT-PROCESS.md` in full at the beginning of each new session or context-restored continuation. Consult its relevant sections before changing project records, preparing specifications or handing off work. It need not be reread before every message/tool call while its instructions remain in context. Follow this lightweight process rather than importing a full framework merely because one is installed.
 
 ## Documentation Map
 * **Goals & Scope:** `VISION.md`
@@ -21,12 +24,13 @@ Open Freebie Finder is a local/server-side smart proxy and load balancer for zer
 * **Architectural Decisions:** `docs/decisions/`
 * **Specifications:** `specs/`
 * **Notes & Reports:** `notes/`
-* **Process Governance:** `PROJECT-PROCESS.md`
+* **Process Governance:** `PROJECT-PROCESS.md` (public, self-contained English instructions).
 
 ## Records and Allowed Paths
 * **Documentation & Specifications:** `AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `docs/`, `specs/`, `notes/`.
 * **Backend:** `backend/` (FastAPI, Python 3.11+)
 * **Frontend:** `frontend/` (React, Vite, Tailwind CSS)
+* **Operational Tools:** `scripts/` (scoped probes and maintenance utilities; each tool requires its own authorized task/specification).
 * **Configuration & Environment:** `.env.example`, `docker-compose.yml`, `Dockerfile`
 
 ## Execution and Verification Commands
@@ -43,7 +47,7 @@ Open Freebie Finder is a local/server-side smart proxy and load balancer for zer
 * Pushing commits to remote repositories without approval.
 
 ## Agent Operating Rules
-* **Language rule:** All project documentation (`AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `docs/`, `specs/`, `notes/`) and codebase MUST strictly be maintained in English. User communication in chat may be conducted in Russian or other languages, but all written project artifacts, specifications, and code must remain in English. (Note: Owner process governance files `PROJECT-PROCESS.md` and `SPEC-EXAMPLE.md` are preserved in their original Russian form as an intentional framework exception).
+* **Language rule:** All project documentation (`AGENTS.md`, `VISION.md`, `ARCHITECTURE.md`, `ROADMAP.md`, `TASKS.md`, `HANDOFF.md`, `docs/`, `specs/`, `notes/`) and codebase MUST strictly be maintained in English. User communication in chat may be conducted in Russian or other languages, but all written project artifacts, specifications, and code must remain in English. (Note: `SPEC-EXAMPLE.md` remains in its original Russian form as an intentional teaching-template exception; `PROJECT-PROCESS.md` is maintained in English).
 * Restore context from repository files rather than relying on ephemeral chat history.
 * Link every task to a phase in `ROADMAP.md` and core value in `VISION.md`.
 * Distinguish between proposed design (`proposal`) and actual working implementation (`as-built`).
